@@ -2,6 +2,8 @@ from pathlib import Path
 from decouple import config
 from .ckeditor import *
 from .jazzmin import *
+from .email_data import *
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 

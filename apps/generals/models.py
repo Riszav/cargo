@@ -1,5 +1,7 @@
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core.mail import send_mail
+from config.settings import DEFAULT_FROM_EMAIL
 
 
 class Banner(models.Model):
@@ -78,6 +80,24 @@ class Application(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        count = Application.objects.count()
+        setting = ApplicationSettings.objects.first()
+
+        subject = f'Новая заявка №{count + 1}'
+        message = f'Новая заявка на сайте. \nОтправитель: {self.name} \nНомер телефона: {self.phone_number} \nПочта: {self.email} \nСообщение: {self.message}'
+        recipient_list = setting.email if setting else 'riszav.01@gmail.com'
+
+        try:
+            print("sending")
+            send_mail(subject=subject,
+                      message=message, 
+                      from_email=DEFAULT_FROM_EMAIL,
+                      recipient_list=[recipient_list,])
+        except Exception as e:
+            print(e)
+        return super().save(*args, **kwargs)
     
     class Meta:
         verbose_name = 'Заявка'
