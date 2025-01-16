@@ -1,0 +1,68 @@
+  version: '3'
+  services:
+    web:
+      container_name: maxdev
+      restart: always
+      build:
+        context: .
+      env_file: 
+        - .env
+      volumes:
+        - .:/app
+        - back_static:/usr/src/app/back_static
+        - back_media:/usr/src/app/back_media
+      depends_on:
+        - pgdb
+        # - frontend
+      command: sh -c "python manage.py makemigrations && 
+                      python manage.py migrate && 
+                      python manage.py collectstatic --noinput &&
+                      gunicorn config.wsgi:application --bind 0.0.0.0:8017"
+      ports:
+        - "8000:8000"
+
+    pgdb:
+      image: postgres:latest
+      container_name: maxdev_postgres
+      restart: always
+      env_file: 
+        - .env
+      environment:
+        POSTGRES_DB: ${SQL_DATABASE}
+        POSTGRES_USER: ${SQL_USER}
+        POSTGRES_PASSWORD: ${SQL_PASSWORD}
+      ports:
+        - "5447:5432"
+      volumes:
+        - db_data:/var/lib/postgresql/data/
+
+    # frontend:
+    #   container_name: maxdev_front
+    #   build:
+    #     context: ../maxdev_front
+    #   env_file:
+    #     - .env
+    #   volumes:
+    #     - dist_volume:/dist_volume
+
+    nginx:
+      image: nginx
+      container_name: maxdev_nginx
+      restart: always
+      ports:
+        - "8087:8087"
+      volumes:
+        - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        - back_static:/usr/src/app/back_static
+        - back_media:/usr/src/app/back_media
+        # - dist_volume:/usr/src/app/dist
+        # - /etc/letsencrypt:/etc/letsencrypt
+      depends_on:
+        - web
+        # - frontend
+
+  volumes:
+    back_static:
+    back_media:
+    db_data:
+    # dist_volume:
