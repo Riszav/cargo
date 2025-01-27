@@ -8,10 +8,13 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('apps.generals.urls')),
-    # path('api/v1/', include('apps.projects.urls')),
+    path('api/v1/', include('apps.users.urls')),
+    path('api/v1/', include('apps.packages.urls')),
     # path('api/v1/', include('apps.services.urls')),
     # path('api/v1/', include('apps.settings.urls')),
     
+    # path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),

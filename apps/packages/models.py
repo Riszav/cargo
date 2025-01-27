@@ -1,0 +1,172 @@
+from django.db import models
+from apps.users.models import User
+
+
+STATUS_CHOICES = [
+    ('Проверяется', 'Проверяется'),
+    ('Ждем на склад', 'Ждем на склад'),
+    ('На складе', 'На складе'),
+    ('Отправлена', 'Отправлена'),
+    ('На обработке', 'На обработке'),
+    ('Прибыла', 'Прибыла'),
+    ('Доставлена заказчику', 'Доставлена заказчику'),
+    ('Неправильный трекинг номер', 'Неправильный трекинг номер'),
+    ('Возвращена отправителю', 'Возвращена отправителю'),
+    ('Задержана на складе', 'Задержана на складе'),
+    ('Отменена', 'Отменена'),
+]
+
+WAREHOUSE_CHOICES = [
+    ('США', 'США'),
+    ('Турция', 'Турция'),
+    ('Китай', 'Китай'),
+    ('Япония', 'Япония'),
+]
+
+TYPE_OF_PACKAGING_CHOICES = [
+    ('Пакет', 'Пакет'),
+    ('Коробка', 'Коробка'),
+]
+
+OPTIONS_OF_PACKAGING_CHOICES = [
+    ('Отправить в почтовой упаковке', 'Отправить в почтовой упаковке'),
+    ('Сохранить обувную коробку', 'Сохранить обувную коробку'),
+]
+
+
+class Store(models.Model):
+    name = models.CharField('Название магазина', max_length=255, blank=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Магазин'
+        verbose_name_plural = 'Магазины'
+        
+
+class Package(models.Model):
+    client = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Клиент', related_name='packages')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Получатель', related_name='packages_recipient')
+    status = models.CharField('Статус', max_length=255, blank=True, choices=STATUS_CHOICES)
+    warehouse = models.CharField('Склад', max_length=255, blank=True, choices=WAREHOUSE_CHOICES)
+    package_image = models.ImageField('Фото посылки', upload_to='package_images/', blank=True)
+    label_image = models.ImageField('Фото лэйбла', upload_to='label_images/', blank=True)
+    invoice_image = models.ImageField('Фото инвойса', upload_to='invoice_images/', blank=True)
+    type_of_packaging = models.CharField('Тип упаковки', max_length=255, blank=True, choices=TYPE_OF_PACKAGING_CHOICES)
+    options_of_packaging = models.CharField('Опции упаковки', max_length=255, blank=True, choices=OPTIONS_OF_PACKAGING_CHOICES)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, verbose_name='Магазин', related_name='packages')
+    full_name = models.CharField('Фамилия и Имя', max_length=255, blank=True)
+    weight_of_package = models.FloatField('Вес по складу', blank=True, null=True)
+    tracking_number = models.CharField('Трек номер', max_length=255, blank=True)
+    count_scans = models.IntegerField('Количество сканов', blank=True, null=True)
+    
+    final_weight = models.FloatField('Итоговый вес', blank=True, null=True)
+    delivery_cost = models.IntegerField('Стоимость доставки', blank=True, null=True)
+    manual_editing = models.BooleanField('Ручное редактирование', default=False)
+
+    client_comment = models.TextField('Комментарий клиента', blank=True)
+    admin_comment = models.TextField('Комментарий администратора', blank=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.client} - {self.recipient}'
+    
+    class Meta:
+        verbose_name = 'Посылка'
+        verbose_name_plural = 'Посылки'
+
+
+class PackageWeight(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, verbose_name='Посылка', related_name='package_weights')
+    count_place = models.IntegerField('Количество мест', blank=True, null=True)
+    weight = models.FloatField('Вес', blank=True, null=True)
+    is_volume_weight = models.BooleanField('Обьемный вес', default=False)
+    length = models.IntegerField('Длина', blank=True, null=True)
+    width = models.IntegerField('Ширина', blank=True, null=True)
+    height = models.IntegerField('Высота', blank=True, null=True)
+    volume_weight = models.IntegerField('Обьемный вес', blank=True, null=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.package} - {self.weight}'
+    
+    class Meta:
+        verbose_name = 'Вес посылки'
+        verbose_name_plural = 'Вес посылок'
+        
+
+class Category(models.Model):
+    name = models.CharField('Название', max_length=255, blank=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+
+class Product(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория', related_name='products')
+    name = models.CharField('Название', max_length=255, blank=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товары'
+
+
+class PackageDetail(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, verbose_name='Посылка', related_name='package_details')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар', related_name='package_details')
+    price = models.IntegerField('Цена', blank=True, null=True)
+    count = models.IntegerField('Количество', blank=True, null=True)
+    summa = models.IntegerField('Сумма', blank=True, null=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.product} - {self.count}'
+    
+    class Meta:
+        verbose_name = 'Детали посылки'
+        verbose_name_plural = 'Детали посылок'
+        
+
+class PackageImage(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, verbose_name='Посылка', related_name='package_images')
+    image = models.ImageField('Фото', upload_to='package_images/', blank=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.package}'
+    
+    class Meta:
+        verbose_name = 'Фото посылки'
+        verbose_name_plural = 'Фото посылок'
+
+
+SCAN_TYPE_CHOICES = [
+    ('Входящие', 'Входящие'),
+    ('Исходящие', 'Исходящие'),
+]
+
+class Scan(models.Model):
+    tracking_number = models.CharField('Трек номер', max_length=255, blank=True)
+    tracking_number_2 = models.CharField('Трек номер 2', max_length=255, blank=True)
+    manager = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Менеджер', related_name='scans')
+    type = models.CharField('Тип', max_length=255, blank=True, choices=SCAN_TYPE_CHOICES)
+    location = models.CharField('Локация', max_length=255, blank=True)
+    updated_at = models.DateTimeField('Дата сканирования', auto_now=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.tracking_number} - {self.tracking_number_2}'
+    
+    class Meta:
+        verbose_name = 'Скан'
+        verbose_name_plural = 'Сканы'
