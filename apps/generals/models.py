@@ -86,7 +86,7 @@ class Application(models.Model):
         setting = ApplicationSettings.objects.first()
 
         subject = f'Новая заявка №{count + 1}'
-        message = f'Новая заявка на сайте. \nОтправитель: {self.name} \nНомер телефона: {self.phone_number} \nПочта: {self.email} \nСообщение: {self.message}'
+        message = f'Новая заявка на сайте. \nОтправитель: {self.name} \nНомер телефона: {self.phone} \nПочта: {self.email} \nСообщение: {self.message}'
         recipient_list = setting.email if setting else 'riszav.01@gmail.com'
 
         try:
