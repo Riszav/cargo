@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from drf_spectacular.utils import extend_schema
 from . import models, serializers
 
@@ -26,15 +26,9 @@ class OurServicesListView(ListAPIView):
     queryset = models.OurServices.objects.all()
     serializer_class = serializers.OurServicesSerializer
     
-
+    
 @extend_schema(tags=['ОБЩИЕ'])
-class ApplicationSettingsListView(ListAPIView):
-    queryset = models.ApplicationSettings.objects.all()
-    serializer_class = serializers.ApplicationSettingsSerializer
-
-
-@extend_schema(tags=['ОБЩИЕ'])
-class ApplicationListView(ListAPIView):
+class ApplicationListView(CreateAPIView):
     queryset = models.Application.objects.all()
     serializer_class = serializers.ApplicationSerializer
 

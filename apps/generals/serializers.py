@@ -24,12 +24,6 @@ class OurServicesSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OurServices
         fields = '__all__'
-
-
-class ApplicationSettingsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.ApplicationSettings
-        fields = '__all__'
         
         
 class ApplicationSerializer(serializers.ModelSerializer):
