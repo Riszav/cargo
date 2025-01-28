@@ -4,6 +4,11 @@ from config.permissions import IsAdmin
 from . import models, serializers
 
 
+class CountryListAPIView(ListAPIView):
+    queryset = models.Country.objects.all()
+    serializer_class = serializers.CountrySerializer
+
+
 class UserListAPIView(ListAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
