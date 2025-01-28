@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .managers import UserManager
 
 
 class Country(models.Model):
@@ -20,8 +21,8 @@ class User(AbstractUser):
     first_name = models.CharField('Имя', max_length=255, blank=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name='Страна', blank=True, null=True)
     address = models.CharField('Адрес', max_length=255, blank=True)
-    phone_number = models.CharField('Номер телефона', max_length=255, blank=True)
-    email = models.EmailField('Почта', max_length=255, blank=True)
+    phone_number = models.CharField('Номер телефона', max_length=255, blank=True, null=True)
+    email = models.EmailField('Почта', max_length=255, blank=True, null=True)
     tarif_usa = models.CharField('Тариф США', max_length=255, blank=True)
     tarif_usa_value = models.IntegerField('', blank=True, null=True)
     tarif_turkey = models.CharField('Тариф Турция', max_length=255, blank=True)
@@ -39,9 +40,28 @@ class User(AbstractUser):
     passport_image_2 = models.ImageField('Фото удостоверения личности', upload_to='passport_images/', blank=True)
     contract = models.CharField('Договор', max_length=255, blank=True)
     is_admin = models.BooleanField('Админ', default=False)
+    username = models.CharField('Логин', max_length=255, blank=True, null=True)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['phone_number']
 
+    objects = UserManager()
+    
+    def save(self, *args, **kwargs):
+        if User.objects.filter(email=self.email).exclude(id=self.id).exists():
+            raise ValueError('Пользователь с такой почтой уже существует')
+        elif User.objects.filter(phone_number=self.phone_number).exclude(id=self.id).exists():
+            raise ValueError('Пользователь с таким номером телефона уже существует')
+        super().save(*args, **kwargs)
+    
     def __str__(self):
-        return f'{self.last_name} {self.first_name}' if self.last_name or self.first_name else f'{self.username}'
+        if self.last_name or self.first_name:
+            return f'{self.last_name} {self.first_name}' 
+        elif self.email:
+            return f'{self.email}'
+        else:
+            return f'{self.phone_number}'
+    
     
     class Meta: 
         verbose_name = 'Пользователь'
