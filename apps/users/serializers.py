@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from . import models
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer, TokenBlacklistSerializer
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,6 +27,18 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['id', 'client_id', 'last_name', 'first_name', 'phone_number', 'email', 'password'
+        fields = ['id', 'client_id', 'last_name', 'first_name', 'phone_number', 'email', 'password',
                   'tarif_usa', 'tarif_usa_value', 'tarif_turkey', 'tarif_turkey_value', 'tarif_china', 'tarif_china_value', 'tarif_japan', 'tarif_japan_value',]
 
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+
+
+class UserRefreshSerializer(TokenRefreshSerializer):
+    pass
+
+
+class UserLogoutSerializer(TokenBlacklistSerializer):
+    pass
