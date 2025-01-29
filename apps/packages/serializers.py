@@ -16,7 +16,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
+    category = CategorySerializer(read_only=True)
     
     class Meta:
         model = models.Product
@@ -27,30 +27,53 @@ class PackageDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.PackageDetail
-        fields = '__all__'
+        fields = ['id', 'product', 'price', 'count', 'summa']
         
+class PackageDetailCreateSerializer(serializers.ModelSerializer):
+    # product = ProductSerializer()
+    
+    class Meta:
+        model = models.PackageDetail
+        fields = ['id', 'product', 'price', 'count', 'summa']
         
 class PackageImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PackageImage
-        fields = '__all__'
+        fields = ['id', 'image']
         
         
 class PackageWeightSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PackageWeight
-        fields = '__all__'
+        fields = ['id', 'count_place', 'weight', 'is_volume_weight', 'length', 'width', 'height', 'volume_weight']
 
 
 class PackageSerializer(serializers.ModelSerializer):
-    package_details = PackageDetailSerializer(many=True)
-    package_images = PackageImageSerializer(many=True)
-    package_weights = PackageWeightSerializer(many=True)
-    store = StoreSerializer()
+    package_details = PackageDetailSerializer(many=True, required=False, read_only=True)
+    package_images = PackageImageSerializer(many=True, required=False, read_only=True)
+    package_weights = PackageWeightSerializer(many=True, required=False, read_only=True)
+    store = StoreSerializer(read_only=True)
     
     class Meta:
         model = models.Package
         fields = '__all__'
+        
+
+class PackageCreateSerializer(serializers.ModelSerializer):
+    package_details = PackageDetailCreateSerializer(many=True, required=False)
+    package_images = PackageImageSerializer(many=True, required=False)
+    package_weights = PackageWeightSerializer(many=True, required=False)
+    class Meta:
+        model = models.Package
+        fields = ['status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
+                  'store', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 'manual_editing',
+                  'client_comment', 'admin_comment', 'package_details', 'package_images', 'package_weights']
+        
+        
+class PackageStatusCountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Package
+        fields = ['status',]
         
 
 class ManagerSerializer(serializers.ModelSerializer):
@@ -59,8 +82,15 @@ class ManagerSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'country']
         
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Location
+        fields = ['id', 'name']
+        
+
 class ScanSerializer(serializers.ModelSerializer):
     manager = ManagerSerializer()
+    location = LocationSerializer()
     
     class Meta:
         model = models.Scan

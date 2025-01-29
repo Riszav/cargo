@@ -46,16 +46,16 @@ class Store(models.Model):
         
 
 class Package(models.Model):
-    client = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Клиент', related_name='packages')
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Получатель', related_name='packages_recipient')
+    client = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Клиент', related_name='packages', blank=True, null=True)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Получатель', related_name='packages_recipient', blank=True, null=True)
     status = models.CharField('Статус', max_length=255, blank=True, choices=STATUS_CHOICES)
     warehouse = models.CharField('Склад', max_length=255, blank=True, choices=WAREHOUSE_CHOICES)
-    package_image = models.ImageField('Фото посылки', upload_to='package_images/', blank=True)
-    label_image = models.ImageField('Фото лэйбла', upload_to='label_images/', blank=True)
-    invoice_image = models.ImageField('Фото инвойса', upload_to='invoice_images/', blank=True)
+    package_image = models.ImageField('Фото посылки', upload_to='package_images/', blank=True, null=True)
+    label_image = models.ImageField('Фото лэйбла', upload_to='label_images/', blank=True, null=True)
+    invoice_image = models.ImageField('Фото инвойса', upload_to='invoice_images/', blank=True, null=True)
     type_of_packaging = models.CharField('Тип упаковки', max_length=255, blank=True, choices=TYPE_OF_PACKAGING_CHOICES)
     options_of_packaging = models.CharField('Опции упаковки', max_length=255, blank=True, choices=OPTIONS_OF_PACKAGING_CHOICES)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE, verbose_name='Магазин', related_name='packages')
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, verbose_name='Магазин', related_name='packages', blank=True, null=True)
     full_name = models.CharField('Фамилия и Имя', max_length=255, blank=True)
     weight_of_package = models.FloatField('Вес по складу', blank=True, null=True)
     tracking_number = models.CharField('Трек номер', max_length=255, blank=True)
@@ -150,17 +150,29 @@ class PackageImage(models.Model):
         verbose_name_plural = 'Фото посылок'
 
 
+class Location(models.Model):
+    name = models.CharField('Название', max_length=255, blank=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Локация'
+        verbose_name_plural = 'Локации'
+
+
 SCAN_TYPE_CHOICES = [
     ('Входящие', 'Входящие'),
     ('Исходящие', 'Исходящие'),
-]
+]   
 
 class Scan(models.Model):
     tracking_number = models.CharField('Трек номер', max_length=255, blank=True)
     tracking_number_2 = models.CharField('Трек номер 2', max_length=255, blank=True)
     manager = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Менеджер', related_name='scans')
     type = models.CharField('Тип', max_length=255, blank=True, choices=SCAN_TYPE_CHOICES)
-    location = models.CharField('Локация', max_length=255, blank=True)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name='Локация', related_name='scans', blank=True, null=True)
     updated_at = models.DateTimeField('Дата сканирования', auto_now=True)
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     

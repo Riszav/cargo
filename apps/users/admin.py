@@ -13,7 +13,8 @@ class CountryAdmin(admin.ModelAdmin):
 
 @admin.register(models.User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
+    list_display = ('is_admin', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
+    list_display_links = ('is_admin', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
     search_fields = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     list_filter = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     ordering = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
@@ -26,7 +27,7 @@ class UserAdmin(BaseUserAdmin):
             {"fields": 
                 ("client_id", ("last_name", "first_name"), "country", 
                 ("tarif_usa", "tarif_usa_value"), ("tarif_turkey", "tarif_turkey_value"), ("tarif_china", "tarif_china_value"), ("tarif_japan", "tarif_japan_value"), 
-                "inn", "status", "passport_number", "passport_date", "passport_place", "passport_image_1", "passport_image_2", "contract"
+                "inn", "status", "passport_number", "passport_date", "passport_place", "passport_image_1", "passport_image_2", "contract", 'is_admin'
                 )
             }
         ),

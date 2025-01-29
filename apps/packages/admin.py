@@ -35,7 +35,8 @@ class PackageWeightInline(admin.TabularInline):
 @admin.register(models.Package)
 class PackageAdmin(admin.ModelAdmin):
     list_display = ['id', 'client', 'recipient', 'status', 'warehouse', 'created_at']
-    list_display_links = ['id', 'client', 'recipient', 'status', 'warehouse', 'created_at']
+    list_display_links = ['id', 'client', 'recipient', 'warehouse', 'created_at']
+    list_editable = ['status',]
     list_filter = ['created_at']
     search_fields = ['client', 'recipient']
     inlines = [PackageDetailInline, PackageImageInline, PackageWeightInline]
@@ -47,6 +48,13 @@ class ScanAdmin(admin.ModelAdmin):
     list_display_links = ['id', 'tracking_number', 'tracking_number_2', 'manager', 'type', 'location', 'updated_at', 'created_at']
     list_filter = ['updated_at', 'created_at', 'type']
     search_fields = ['tracking_number', 'tracking_number_2']
+    
+
+@admin.register(models.Location)
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name']
+    search_fields = ['name']
+
 
 
 
