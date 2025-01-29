@@ -6,6 +6,7 @@ from config.permissions import IsAdmin
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
+from django.utils import timezone
 from rest_framework import status
 from . import models, serializers
 
@@ -28,16 +29,11 @@ class UserCreateAPIView(CreateAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = models.User.objects.create_user(
-            email=serializer.validated_data['email'],
-            phone_number=serializer.validated_data['phone_number'],
-            password=serializer.validated_data['password'],
-            last_name=serializer.validated_data['last_name'],
-            first_name=serializer.validated_data['first_name'],
-            country=serializer.validated_data['country'],
-            address=serializer.validated_data['address'],
-        )
+        user = models.User.objects.create_user(**serializer.validated_data)
         password = serializer.validated_data['password']
+        user.date_login = timezone.now()
+        # user.is_active = True
+        user.save()
         # user = models.User.objects.get(id=self.data['id'])
         # user.set_password(password)
         # user.is_active = True
@@ -88,6 +84,10 @@ class UserLoginAPIView(APIView):
                 return Response(data='Пользователь с таким email или номером телефона не найден', status=status.HTTP_204_NO_CONTENT)
         if not user.is_active:
             return Response(data='Пользователь не активен', status=status.HTTP_204_NO_CONTENT)
+        if not user.check_password(serializer.validated_data['password']):
+            return Response(data='Неверный пароль', status=status.HTTP_204_NO_CONTENT)
+        user.date_login = timezone.now()
+        user.save()
         refresh = RefreshToken.for_user(user)  # Создание Refesh и Access
         refresh.payload.update({  # Полезная информация в самом токене
             'user_id': user.id,
@@ -97,7 +97,7 @@ class UserLoginAPIView(APIView):
         return Response(data={
             'refresh': str(refresh),
             'access': str(refresh.access_token),  # Отправка на клиент
-        }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Auth'])
