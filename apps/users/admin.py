@@ -17,7 +17,7 @@ class UserAdmin(BaseUserAdmin):
     list_display_links = ('is_admin', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
     search_fields = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     list_filter = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
-    ordering = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
+    ordering = ('-date_joined',)
     # add_form = UserCreationForm
     
     fieldsets = (
