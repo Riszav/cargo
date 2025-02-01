@@ -84,6 +84,25 @@ class UserClientDetailAPIView(RetrieveUpdateAPIView):
         return models.User.objects.get(id=self.request.user.id)
     
 
+class UserClientChangePasswordAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.UserClientChangePasswordSerializer
+    
+    def post(self, request):
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        confirm_password = request.data.get('confirm_password')
+        if not old_password or not new_password or not confirm_password:
+            return Response(data='Неверные данные', status=status.HTTP_400_BAD_REQUEST)
+        if not request.user.check_password(old_password):
+            return Response(data='Неверный пароль', status=status.HTTP_400_BAD_REQUEST)
+        if new_password != confirm_password:
+            return Response(data='Пароли не совпадают', status=status.HTTP_400_BAD_REQUEST)
+        request.user.set_password(new_password)
+        request.user.save()
+        return Response(data='Пароль успешно изменен', status=status.HTTP_200_OK)
+    
+
 @extend_schema(tags=['Auth'])
 class UserLoginAPIView(APIView):
     serializer_class = serializers.UserLoginSerializer

@@ -25,10 +25,32 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserClientSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(read_only=True)
+    phone_number = serializers.CharField(read_only=True)
+    client_id = serializers.CharField(read_only=True)
+    tarif_usa = serializers.CharField(read_only=True)
+    tarif_usa_value = serializers.IntegerField(read_only=True)
+    tarif_usa_weight = serializers.CharField(read_only=True)
+    tarif_turkey = serializers.CharField(read_only=True)
+    tarif_turkey_value = serializers.IntegerField(read_only=True)
+    tarif_turkey_weight = serializers.CharField(read_only=True)
+    tarif_china = serializers.CharField(read_only=True)
+    tarif_china_value = serializers.IntegerField(read_only=True)
+    tarif_china_weight = serializers.CharField(read_only=True)
+    tarif_japan = serializers.CharField(read_only=True)
+    tarif_japan_value = serializers.IntegerField(read_only=True)
+    tarif_japan_weight = serializers.CharField(read_only=True)
+    
     class Meta:
         model = models.User
-        fields = ['id', 'client_id', 'last_name', 'first_name', 'phone_number', 'email', 'password',
-                  'tarif_usa', 'tarif_usa_value', 'tarif_turkey', 'tarif_turkey_value', 'tarif_china', 'tarif_china_value', 'tarif_japan', 'tarif_japan_value',]
+        fields = ['id', 'client_id', 'last_name', 'first_name', 'phone_number', 'email',
+                  'tarif_usa', 'tarif_usa_value', 'tarif_usa_weight', 'tarif_turkey', 'tarif_turkey_value', 'tarif_turkey_weight', 
+                  'tarif_china', 'tarif_china_value', 'tarif_china_weight', 'tarif_japan', 'tarif_japan_value', 'tarif_japan_weight',]
+
+class UserClientChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField()
+    new_password = serializers.CharField()
+    confirm_password = serializers.CharField()
 
 
 class UserLoginSerializer(serializers.Serializer):
