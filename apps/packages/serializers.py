@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from . import models
+from apps.users import models as user_models
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -27,14 +28,14 @@ class PackageDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.PackageDetail
-        fields = ['id', 'product', 'price', 'count', 'summa']
+        fields = ['id', 'product', 'price', 'count']
         
 class PackageDetailCreateSerializer(serializers.ModelSerializer):
     # product = ProductSerializer()
     
     class Meta:
         model = models.PackageDetail
-        fields = ['id', 'product', 'price', 'count', 'summa']
+        fields = ['id', 'product', 'price', 'count']
         
 class PackageImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,11 +49,19 @@ class PackageWeightSerializer(serializers.ModelSerializer):
         fields = ['id', 'count_place', 'weight', 'is_volume_weight', 'length', 'width', 'height', 'volume_weight']
 
 
+class ClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+
+
 class PackageSerializer(serializers.ModelSerializer):
     package_details = PackageDetailSerializer(many=True, required=False, read_only=True)
     package_images = PackageImageSerializer(many=True, required=False, read_only=True)
     package_weights = PackageWeightSerializer(many=True, required=False, read_only=True)
     store = StoreSerializer(read_only=True)
+    client = ClientSerializer(read_only=True)
+    recipient = ClientSerializer(read_only=True)
     
     class Meta:
         model = models.Package
@@ -63,10 +72,24 @@ class PackageCreateSerializer(serializers.ModelSerializer):
     package_details = PackageDetailCreateSerializer(many=True, required=False)
     package_images = PackageImageSerializer(many=True, required=False)
     package_weights = PackageWeightSerializer(many=True, required=False)
+    
     class Meta:
         model = models.Package
-        fields = ['status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
-                  'store', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 'manual_editing',
+        fields = ['recipient', 'status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
+                  'store', 'reys', 'summa', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 'manual_editing',
+                  'client_comment', 'admin_comment', 'package_details', 'package_images', 'package_weights']
+    
+
+
+class PackageAdminCreateSerializer(serializers.ModelSerializer):
+    package_details = PackageDetailCreateSerializer(many=True, required=False)
+    package_images = PackageImageSerializer(many=True, required=False)
+    package_weights = PackageWeightSerializer(many=True, required=False)
+    
+    class Meta:
+        model = models.Package
+        fields = ['client', 'recipient', 'status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
+                  'store', 'reys', 'summa', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 'manual_editing',
                   'client_comment', 'admin_comment', 'package_details', 'package_images', 'package_weights']
         
         
@@ -75,8 +98,15 @@ class PackageStatusCountSerializer(serializers.ModelSerializer):
         model = models.Package
         fields = ['status',]
         
+        
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = user_models.Country
+        fields = ['id', 'name']
 
 class ManagerSerializer(serializers.ModelSerializer):
+    country = CountrySerializer()
+    
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'country']

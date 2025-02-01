@@ -13,6 +13,13 @@ class Country(models.Model):
     class Meta: 
         verbose_name = 'Страна'
         verbose_name_plural = 'Страны'
+        ordering = ['is_active',]
+
+
+class Resipient(models.Model):
+    name = models.CharField('Имя', max_length=255, blank=True)
+    phone_number = models.CharField('Номер телефона', max_length=255, blank=True, null=True)
+    email = models.EmailField('Почта', max_length=255, blank=True, null=True)
 
 
 class User(AbstractUser):
@@ -62,10 +69,10 @@ class User(AbstractUser):
         else:
             return f'{self.phone_number}'
     
-    
     class Meta: 
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+        ordering = ['-date_joined']
     
     
 

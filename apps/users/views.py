@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.utils import timezone
 from rest_framework import status
 from . import models, serializers
+from .utils import generate_client_id
 
 
 class CountryListAPIView(ListAPIView):
@@ -16,12 +17,27 @@ class CountryListAPIView(ListAPIView):
     serializer_class = serializers.CountrySerializer
 
 
+@extend_schema(tags=['Users'])
+
 class UserListAPIView(ListAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
     permission_classes = [IsAdmin]
     
+    def get_queryset(self):
+        queryset = models.User.objects.all()
+        if self.request.query_params.get('id'):
+            queryset = queryset.filter(id=self.request.query_params.get('id'))
+        if self.request.query_params.get('email'):
+            queryset = queryset.filter(email=self.request.query_params.get('email'))
+        if self.request.query_params.get('phone_number'):
+            queryset = queryset.filter(phone_number=self.request.query_params.get('phone_number'))
+        if self.request.query_params.get('resipient'):
+            queryset = queryset.filter(resipient=self.request.query_params.get('resipient'))
+        return queryset
 
+
+@extend_schema(tags=['Users'])
 class UserCreateAPIView(CreateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserCreateSerializer
@@ -32,20 +48,25 @@ class UserCreateAPIView(CreateAPIView):
         user = models.User.objects.create_user(**serializer.validated_data)
         password = serializer.validated_data['password']
         user.date_login = timezone.now()
-        # user.is_active = True
+        
+        client_id = generate_client_id()
+        while models.User.objects.filter(client_id=client_id).exists():
+            client_id = generate_client_id()
+        user.client_id = client_id
         user.save()
-        # user = models.User.objects.get(id=self.data['id'])
-        # user.set_password(password)
-        # user.is_active = True
-        # user.save()
-        refresh = RefreshToken.for_user(user)  # Создание Refesh и Access
-        refresh.payload.update({  # Полезная информация в самом токене
+        
+        refresh = RefreshToken.for_user(user)
+        refresh.payload.update({
             'user_id': user.id,
+            'user_email': user.email,
+            'user_phone_number': user.phone_number,
         })
         return Response(data={
             'refresh': str(refresh),
-            'access': str(refresh.access_token),  # Отправка на клиент
+            'access': str(refresh.access_token),
+            'is_admin': user.is_admin,
         }, status=status.HTTP_201_CREATED)
+        
 
 class UserDetailAPIView(RetrieveUpdateAPIView):
     queryset = models.User.objects.all()
@@ -97,8 +118,8 @@ class UserLoginAPIView(APIView):
         return Response(data={
             'refresh': str(refresh),
             'access': str(refresh.access_token),  # Отправка на клиент
+            'is_admin': user.is_admin,
         }, status=status.HTTP_200_OK)
-
 
 @extend_schema(tags=['Auth'])
 class UserRefreshAPIView(TokenRefreshView):

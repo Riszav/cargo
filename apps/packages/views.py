@@ -9,8 +9,10 @@ from . import models, serializers
 
 
 @extend_schema(tags=['Посылки'])
+@extend_schema(parameters=[
+    OpenApiParameter('status', OpenApiTypes.STR, description='Статус'),
+])
 class PackageListView(ListCreateAPIView):
-    serializer_class = serializers.PackageSerializer
     permission_classes = [IsAdmin]
     
     def get_queryset(self):
@@ -19,6 +21,38 @@ class PackageListView(ListCreateAPIView):
             queryset = queryset.filter(status=self.request.query_params.get('status'))
         return queryset
     
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return serializers.PackageAdminCreateSerializer
+        return serializers.PackageSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        package_details = serializer.validated_data.pop('package_details', [])
+        package_images = serializer.validated_data.pop('package_images', [])
+        package_weights = serializer.validated_data.pop('package_weights', [])
+        
+        package = serializer.save()
+        
+        # Создаём связанные объекты, если их ещё нет
+        if package_details:
+            # Проверка на существование объекта
+            for detail in package_details:
+                models.PackageDetail.objects.get_or_create(package=package, **detail)
+        
+        if package_images:
+            for image in package_images:
+                models.PackageImage.objects.get_or_create(package=package, **image)
+        
+        if package_weights:
+            for weight in package_weights:
+                models.PackageWeight.objects.get_or_create(package=package, **weight)
+                
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 
 @extend_schema(tags=['Посылки'])
 class PackageDetailView(RetrieveUpdateAPIView):
@@ -26,6 +60,39 @@ class PackageDetailView(RetrieveUpdateAPIView):
     serializer_class = serializers.PackageSerializer
     lookup_field = 'pk'
     permission_classes = [IsAdmin]
+    
+    def get_serializer_class(self):
+        if self.request.method == 'PUT' or self.request.method == 'PATCH':
+            return serializers.PackageAdminCreateSerializer
+        return serializers.PackageSerializer
+    
+    
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        package_details = serializer.validated_data.pop('package_details', [])
+        package_images = serializer.validated_data.pop('package_images', [])
+        package_weights = serializer.validated_data.pop('package_weights', [])
+        
+        package = serializer.save()
+        
+        # Создаём связанные объекты, если их ещё нет
+        if package_details:
+            # Проверка на существование объекта
+            for detail in package_details:
+                models.PackageDetail.objects.update_or_create(package=package, **detail)
+        
+        if package_images:
+            for image in package_images:
+                models.PackageImage.objects.update_or_create(package=package, **image)
+        
+        if package_weights:
+            for weight in package_weights:
+                models.PackageWeight.objects.update_or_create(package=package, **weight)
+                
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
 
 
 @extend_schema(tags=['Посылки мои'])
@@ -33,7 +100,6 @@ class PackageDetailView(RetrieveUpdateAPIView):
     OpenApiParameter('status', OpenApiTypes.STR, description='Статус'),
 ])
 class MyPackageListView(ListCreateAPIView):
-    serializer_class = serializers.PackageSerializer
     permission_classes = [IsAuthenticated]
     
     def get_serializer_class(self):
@@ -73,6 +139,48 @@ class MyPackageListView(ListCreateAPIView):
                 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+@extend_schema(tags=['Посылки мои'])
+class MyPackageDetailView(RetrieveUpdateAPIView):
+    lookup_field = 'pk'
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        queryset = models.Package.objects.filter(client=self.request.user)
+        return queryset
+    
+    def get_serializer_class(self):
+        if self.request.method == 'PUT' or self.request.method == 'PATCH':
+            return serializers.PackageCreateSerializer
+        return serializers.PackageSerializer
+    
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        package_details = serializer.validated_data.pop('package_details', [])
+        package_images = serializer.validated_data.pop('package_images', [])
+        package_weights = serializer.validated_data.pop('package_weights', [])
+        
+        package = serializer.save()
+        
+        # Создаём связанные объекты, если их ещё нет
+        if package_details:
+            # Проверка на существование объекта
+            for detail in package_details:
+                models.PackageDetail.objects.update_or_create(package=package, **detail)
+        
+        if package_images:
+            for image in package_images:
+                models.PackageImage.objects.update_or_create(package=package, **image)
+        
+        if package_weights:
+            for weight in package_weights:
+                models.PackageWeight.objects.update_or_create(package=package, **weight)
+                
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
 
 @extend_schema(tags=['Посылки мои'])
 class StatusCountView(ListAPIView):
