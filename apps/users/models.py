@@ -16,10 +16,10 @@ class Country(models.Model):
         ordering = ['is_active',]
 
 
-class Resipient(models.Model):
-    name = models.CharField('Имя', max_length=255, blank=True)
-    phone_number = models.CharField('Номер телефона', max_length=255, blank=True, null=True)
-    email = models.EmailField('Почта', max_length=255, blank=True, null=True)
+# class Resipient(models.Model):
+#     name = models.CharField('Имя', max_length=255, blank=True)
+#     phone_number = models.CharField('Номер телефона', max_length=255, blank=True, null=True)
+#     email = models.EmailField('Почта', max_length=255, blank=True, null=True)
 
 
 class User(AbstractUser):
