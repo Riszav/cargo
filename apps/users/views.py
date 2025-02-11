@@ -1,8 +1,8 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
-from config.permissions import IsAdmin
+from config.permissions import IsAdmin, IsManagerOrAdmin, IsManager
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
@@ -22,7 +22,7 @@ class CountryListAPIView(ListAPIView):
 class UserListAPIView(ListAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsManagerOrAdmin]
     
     def get_queryset(self):
         queryset = models.User.objects.all()
@@ -45,7 +45,18 @@ class UserCreateAPIView(CreateAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = models.User.objects.create_user(**serializer.validated_data)
+        country_id = serializer.validated_data.pop('country_id')
+        country = models.Country.objects.get(id=country_id)
+        
+        address = serializer.validated_data.pop('address')
+        passport_image_1 = serializer.validated_data.pop('passport_image_1')
+        passport_image_2 = serializer.validated_data.pop('passport_image_2')
+        inn = serializer.validated_data.pop('inn')
+        passport_number = serializer.validated_data.pop('passport_number')
+        passport_date = serializer.validated_data.pop('passport_date')
+        passport_place = serializer.validated_data.pop('passport_place')
+        
+        user = models.User.objects.create_user(country=country, **serializer.validated_data)
         password = serializer.validated_data['password']
         user.date_login = timezone.now()
         
@@ -54,6 +65,9 @@ class UserCreateAPIView(CreateAPIView):
             client_id = generate_client_id()
         user.client_id = client_id
         user.save()
+        
+        recipient = models.Recipient.objects.create(user=user, country=country, address=address, passport_image_1=passport_image_1, passport_image_2=passport_image_2, 
+                                                    inn=inn, passport_number=passport_number, passport_date=passport_date, passport_place=passport_place, main_recipient=True)
         
         refresh = RefreshToken.for_user(user)
         refresh.payload.update({
@@ -65,17 +79,24 @@ class UserCreateAPIView(CreateAPIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'is_admin': user.is_admin,
+            'is_manager': user.is_manager,
         }, status=status.HTTP_201_CREATED)
+        
+    
+class RecipientListAPIView(ListAPIView):
+    queryset = models.Recipient.objects.all()
+    serializer_class = serializers.RecipientUserSerializer
+    permission_classes = [IsManagerOrAdmin]
         
 
 class UserDetailAPIView(RetrieveUpdateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsManagerOrAdmin]
     lookup_field = 'pk'
     
 
-class UserClientDetailAPIView(RetrieveUpdateAPIView):
+class ProfileDetailAPIView(RetrieveUpdateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserClientSerializer
     permission_classes = [IsAuthenticated]
@@ -83,6 +104,25 @@ class UserClientDetailAPIView(RetrieveUpdateAPIView):
     def get_object(self):
         return models.User.objects.get(id=self.request.user.id)
     
+
+class ProfileRecipientAPIView(ListCreateAPIView):
+    queryset = models.Recipient.objects.all()
+    serializer_class = serializers.RecipientUserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return models.Recipient.objects.filter(user=self.request.user)
+    
+    
+class ProfileRecipientDetailAPIView(RetrieveUpdateAPIView):
+    queryset = models.Recipient.objects.all()
+    serializer_class = serializers.RecipientUserSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+    
+    def get_object(self):
+        return models.Recipient.objects.get(user=self.request.user, id=self.kwargs['pk'])
+     
 
 class UserClientChangePasswordAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -138,6 +178,7 @@ class UserLoginAPIView(APIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),  # Отправка на клиент
             'is_admin': user.is_admin,
+            'is_manager': user.is_manager,
         }, status=status.HTTP_200_OK)
 
 @extend_schema(tags=['Auth'])

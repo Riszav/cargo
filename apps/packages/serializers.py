@@ -76,10 +76,9 @@ class PackageCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Package
         fields = ['recipient', 'status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
-                  'store', 'reys', 'summa', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 'manual_editing',
-                  'client_comment', 'admin_comment', 'package_details', 'package_images', 'package_weights']
+                  'store', 'reys', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 
+                  'client_comment', 'system_comment', 'package_details', 'package_images', 'package_weights']
     
-
 
 class PackageAdminCreateSerializer(serializers.ModelSerializer):
     package_details = PackageDetailCreateSerializer(many=True, required=False)
@@ -89,8 +88,8 @@ class PackageAdminCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Package
         fields = ['client', 'recipient', 'status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
-                  'store', 'reys', 'summa', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 'manual_editing',
-                  'client_comment', 'admin_comment', 'package_details', 'package_images', 'package_weights']
+                  'store', 'reys', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost',
+                  'client_comment', 'system_comment', 'package_details', 'package_images', 'package_weights']
         
         
 class PackageStatusCountSerializer(serializers.ModelSerializer):
@@ -137,3 +136,24 @@ class ScanCreateLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Scan
         fields = ['tracking_number', 'tracking_number_2', 'location']
+
+
+class AWBFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AWBFile
+        fields = ('id', 'file')
+        
+
+class AWBSerializer(serializers.ModelSerializer):
+    awb_files = AWBFileSerializer(many=True, required=False)
+    
+    class Meta:
+        model = models.AWB
+        fields = ('id', 'number', 'count_place', 'weight', 'reys', 'date', 'warehouse', 'sender', 'recipient', 'comment', 'image', 'awb_files')
+        
+    def create(self, validated_data):
+        awb_files = validated_data.pop('awb_files', [])
+        awb = models.AWB.objects.create(**validated_data)
+        for file in awb_files:
+            models.AWBFile.objects.create(awb=awb, **file)
+        return awb

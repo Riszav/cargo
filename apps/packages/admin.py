@@ -1,5 +1,25 @@
 from django.contrib import admin
 from . import models
+from config.base_admin import BaseSoloAdmin
+
+
+@admin.register(models.WarehouseData)
+class WarehouseDataAdmin(BaseSoloAdmin):
+    fieldsets = [
+        ('США', {
+            'fields': ['usa_address_1', 'usa_address_2', 'usa_city', 'usa_state', 'usa_zip_code', 'usa_phone'],
+        }), 
+        ('Турция', {
+            'fields': ['turkey_city', 'turkey_rayon', 'turkey_quarter', 'turkey_address', 'turkey_post_code', 'turkey_phone'],
+        }),
+        ('Китай', {
+            'fields': ['china_address', 'china_phone', 'china_region', 'china_detail_address', 'china_post_code'],
+        }),
+        ('Япония', {
+            'fields': ['japan_city', 'japan_address', 'japan_post_code', 'japan_phone']
+        })
+    ]
+    
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -56,6 +76,14 @@ class LocationAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+class AWBFileInline(admin.TabularInline):
+    model = models.AWBFile
+    extra = 1
 
 
+@admin.register(models.AWB)
+class AWBAdmin(admin.ModelAdmin):
+    list_display = ['id', 'number']
+    search_fields = ['number']
+    inlines = [AWBFileInline]
 

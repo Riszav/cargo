@@ -1,7 +1,7 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from config.permissions import IsAdmin
+from config.permissions import *
 from django.db.models import Q
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
@@ -296,3 +296,18 @@ class ScanLocationView(ListCreateAPIView):
         serializer.save(manager=request.user)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+@extend_schema(tags=['AWB'])
+class AWBListView(ListCreateAPIView):
+    serializer_class = serializers.AWBSerializer
+    queryset = models.AWB.objects.all()
+    permission_classes = [IsAdminOrReadOnly]
+    
+
+@extend_schema(tags=['AWB'])
+class AWBDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.AWBSerializer
+    queryset = models.AWB.objects.all()
+    permission_classes = [IsAdminOrReadOnly]
+    lookup_field = 'pk'

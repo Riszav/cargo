@@ -14,4 +14,6 @@ urlpatterns = [
     path('scans/incoming/', views.ScanIncomingCreateView.as_view(), name='scan_incoming_create'),
     path('scans/outgoing/', views.ScanOutgoingCreateView.as_view(), name='scan_outgoing_create'),
     path('scans/location/', views.ScanLocationView.as_view(), name='scan_location'),
+    
+    path('awb/', views.AWBListView.as_view(), name='awb_list'),
 ]

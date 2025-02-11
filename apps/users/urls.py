@@ -7,7 +7,9 @@ urlpatterns = [
     path('users/', views.UserListAPIView.as_view(), name='user-list'),
     path('users/create/', views.UserCreateAPIView.as_view(), name='user-create'),
     path('users/<int:pk>/', views.UserDetailAPIView.as_view(), name='user-detail'),
-    path('users/client/', views.UserClientDetailAPIView.as_view(), name='user-client-detail'),
+    path('profile/', views.ProfileDetailAPIView.as_view(), name='user-client-detail'),
+    path('profile/recipient/', views.ProfileRecipientAPIView.as_view(), name='user-client-recipient'),
+    path('profile/recipient/<int:pk>/', views.ProfileRecipientDetailAPIView.as_view(), name='user-client-recipient-detail'),
     path('users/client/change-password/', views.UserClientChangePasswordAPIView.as_view(), name='user-client-change-password'),
     
     path('login/', views.UserLoginAPIView.as_view(), name='user-login'),

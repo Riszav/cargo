@@ -11,13 +11,20 @@ class CountryAdmin(admin.ModelAdmin):
     ordering = ('name', 'is_active')
 
 
+class RecipientInline(admin.TabularInline):
+    model = models.Recipient
+    extra = 1
+
+
 @admin.register(models.User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('is_admin', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
-    list_display_links = ('is_admin', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
+    list_display = ('is_admin', 'is_manager', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
+    list_display_links = ('is_admin', 'is_manager', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
     search_fields = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     list_filter = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     ordering = ('-date_joined',)
+    inlines = [RecipientInline]
+    readonly_fields = ('client_id',)
     # add_form = UserCreationForm
     
     fieldsets = (
@@ -28,7 +35,7 @@ class UserAdmin(BaseUserAdmin):
                 ("client_id", ("last_name", "first_name"), "country", 
                 ("tarif_usa", "tarif_usa_value"), 'tarif_usa_weight', ("tarif_turkey", "tarif_turkey_value"), 'tarif_turkey_weight', 
                 ("tarif_china", "tarif_china_value"), 'tarif_china_weight', ("tarif_japan", "tarif_japan_value"), 'tarif_japan_weight', 
-                "inn", "status", "passport_number", "passport_date", "passport_place", "passport_image_1", "passport_image_2", "contract", 'is_admin'
+                'is_admin', 'is_manager'
                 )
             }
         ),
