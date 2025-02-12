@@ -106,7 +106,7 @@ class Recipient(models.Model):
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.last_name} {self.first_name}'
     
     def save(self, *args, **kwargs):
         if self.main_recipient:

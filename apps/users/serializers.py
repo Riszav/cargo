@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from . import models
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer, TokenBlacklistSerializer
 
@@ -20,27 +21,19 @@ class RecipientSerializer(serializers.ModelSerializer):
     user = UserFullNameSerializer(read_only=True)
     class Meta:
         model = models.Recipient
-        fields = ['id', 'last_name', 'first_name', 'status_recipient', 'inn', 'country', 'country_id', 'passport_number', 'passport_date', 'passport_place', 
-                  'phone_number', 'user', 'passport_image_1', 'passport_image_2', 'created_at']  
-
-
-class RecipientChangeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Recipient
-        fields = ['id', 'last_name', 'first_name', 'status_recipient', 'inn', 'country', 'passport_number', 'passport_date', 'passport_place', 
-                  'phone_number', 'user', 'passport_image_1', 'passport_image_2', 'created_at']  
+        fields = ['id', 'last_name', 'first_name', 'phone_number', 'country', 'country_id', 'address', 'status_recipient',
+                  'passport_number', 'passport_date', 'passport_place', 'passport_end_date', 'inn',  'date_of_birth', 
+                  'passport_image_1', 'passport_image_2', 'portret_image', 'contract', 'user', 'main_recipient', 'created_at']  
 
 
 class RecipientUserSerializer(RecipientSerializer):
-    edit_recipient = serializers.BooleanField(read_only=True)
-    class Meta(RecipientSerializer.Meta):
-        ordering = ['main_recipient', '-created_at']
-        
-    def create(self, validated_data):
-        user = self.context['request'].user
-        country = models.Country.objects.get(id=validated_data['country_id'])
-        recipient = models.Recipient.objects.create(user=user, country=country, **validated_data)
-        return recipient
+    status_recipient = serializers.CharField(read_only=True)
+    main_recipient = serializers.BooleanField(read_only=True)
+    
+    class Meta:
+        model = models.Recipient
+        fields = ('id', 'last_name', 'first_name', 'status_recipient', 'address', 'country', 'country_id',
+                  'phone_number', 'user', 'passport_image_1', 'passport_image_2', 'main_recipient', 'created_at')
         
 
 class UserSerializer(serializers.ModelSerializer):

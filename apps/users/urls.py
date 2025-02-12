@@ -7,9 +7,12 @@ urlpatterns = [
     path('users/', views.UserListAPIView.as_view(), name='user-list'),
     path('users/create/', views.UserCreateAPIView.as_view(), name='user-create'),
     path('users/<int:pk>/', views.UserDetailAPIView.as_view(), name='user-detail'),
+    path('users/<int:pk>/recipients/', views.UserRecipientListCreateAPIView.as_view(), name='user-recipient-list-create'),
+    path('users/recipients/', views.RecipientListAPIView.as_view(), name='recipient-list'),
     path('profile/', views.ProfileDetailAPIView.as_view(), name='user-client-detail'),
     path('profile/recipient/', views.ProfileRecipientAPIView.as_view(), name='user-client-recipient'),
     path('profile/recipient/<int:pk>/', views.ProfileRecipientDetailAPIView.as_view(), name='user-client-recipient-detail'),
+    path('profile/recipient/<int:pk>/make-main/', views.ProfileRecipientMainAPIView.as_view(), name='user-client-recipient-main'),
     path('users/client/change-password/', views.UserClientChangePasswordAPIView.as_view(), name='user-client-change-password'),
     
     path('login/', views.UserLoginAPIView.as_view(), name='user-login'),

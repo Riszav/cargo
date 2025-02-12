@@ -11,15 +11,15 @@ class CountryAdmin(admin.ModelAdmin):
     ordering = ('name', 'is_active')
 
 
-class RecipientInline(admin.TabularInline):
+class RecipientInline(admin.StackedInline):
     model = models.Recipient
     extra = 1
 
 
 @admin.register(models.User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('is_admin', 'is_manager', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
-    list_display_links = ('is_admin', 'is_manager', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
+    list_display = ('id', 'is_admin', 'is_manager', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
+    list_display_links = ('id', 'is_admin', 'is_manager', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
     search_fields = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     list_filter = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     ordering = ('-date_joined',)

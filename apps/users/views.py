@@ -1,28 +1,32 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
-from config.permissions import IsAdmin, IsManagerOrAdmin, IsManager
+from config.permissions import IsAdmin, IsAdminOrManager, IsManager
 from rest_framework_simplejwt.tokens import RefreshToken
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from django.utils import timezone
 from rest_framework import status
 from . import models, serializers
 from .utils import generate_client_id
+from django.db.models import Q
 
 
+@extend_schema(tags=['Countries'])
+@extend_schema_view(get=extend_schema(summary='СПИСОК ВСЕХ СТРАН'))
 class CountryListAPIView(ListAPIView):
     queryset = models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
 
 
 @extend_schema(tags=['Users'])
-
+@extend_schema_view(get=extend_schema(summary='СПИСОК ВСЕХ ПОЛЬЗОВАТЕЛЕЙ С ФИЛЬТРОМ'))
 class UserListAPIView(ListAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [IsManagerOrAdmin]
+    permission_classes = [IsAdminOrManager]
     
     def get_queryset(self):
         queryset = models.User.objects.all()
@@ -38,6 +42,7 @@ class UserListAPIView(ListAPIView):
 
 
 @extend_schema(tags=['Users'])
+@extend_schema_view(get=extend_schema(summary='СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ'))
 class UserCreateAPIView(CreateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserCreateSerializer
@@ -82,20 +87,56 @@ class UserCreateAPIView(CreateAPIView):
             'is_manager': user.is_manager,
         }, status=status.HTTP_201_CREATED)
         
-    
-class RecipientListAPIView(ListAPIView):
-    queryset = models.Recipient.objects.all()
-    serializer_class = serializers.RecipientUserSerializer
-    permission_classes = [IsManagerOrAdmin]
-        
 
+@extend_schema(tags=['Users'])
+@extend_schema_view(get=extend_schema(summary='СПИСОК ВСЕХ ПОЛУЧАТЕЛЕЙ С ФИЛЬТРОМ'))
+class RecipientListAPIView(ListAPIView):
+    queryset = models.Recipient.objects.all().order_by('-created_at')
+    serializer_class = serializers.RecipientSerializer
+    permission_classes = [IsAdminOrManager]
+    
+    def get_queryset(self):
+        queryset = models.Recipient.objects.all().order_by('-created_at')
+        if self.request.query_params.get('status_recipient'):
+            queryset = queryset.filter(status_recipient=self.request.query_params.get('status_recipient'))
+        if self.request.query_params.get('full_name'):
+            full_name = self.request.query_params.get('full_name').split()
+            query = Q()
+            for part in full_name:
+                query &= (Q(last_name__icontains=part) | Q(first_name__icontains=part))
+            queryset = queryset.filter(query)
+        if self.request.query_params.get('user_id'):
+            queryset = queryset.filter(user_id=self.request.query_params.get('user_id'))
+        return queryset
+    
+
+@extend_schema(tags=['Users'])
+@extend_schema_view(get=extend_schema(summary='СПИСОК ВСЕХ ПОЛУЧАТЕЛЕЙ ПОЛЬЗОВАТЕЛЯ'))
+class UserRecipientListCreateAPIView(ListCreateAPIView):
+    queryset = models.Recipient.objects.all()
+    serializer_class = serializers.RecipientSerializer
+    permission_classes = [IsAdminOrManager]
+
+    def get_queryset(self):
+        return models.Recipient.objects.filter(user_id=self.kwargs['pk'])
+    
+    def perform_create(self, serializer):
+        user = models.User.objects.get(id=self.kwargs['pk'])
+        country = models.Country.objects.get(id=self.request.data['country_id'])
+        serializer.save(user=user, country=country)
+    
+
+@extend_schema(tags=['Users'])
+@extend_schema_view(get=extend_schema(summary='ПОЛЬЗОВАТЕЛЬ'))
 class UserDetailAPIView(RetrieveUpdateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [IsManagerOrAdmin]
+    permission_classes = [IsAdminOrManager]
     lookup_field = 'pk'
     
 
+@extend_schema(tags=['Profile'])
+@extend_schema_view(get=extend_schema(summary='ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ'))
 class ProfileDetailAPIView(RetrieveUpdateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserClientSerializer
@@ -105,25 +146,66 @@ class ProfileDetailAPIView(RetrieveUpdateAPIView):
         return models.User.objects.get(id=self.request.user.id)
     
 
+@extend_schema(tags=['Profile'])
+@extend_schema_view(get=extend_schema(summary='СПИСОК ВСЕХ ПОЛУЧАТЕЛЕЙ ПОЛЬЗОВАТЕЛЯ'))
 class ProfileRecipientAPIView(ListCreateAPIView):
     queryset = models.Recipient.objects.all()
     serializer_class = serializers.RecipientUserSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return models.Recipient.objects.filter(user=self.request.user)
-    
-    
-class ProfileRecipientDetailAPIView(RetrieveUpdateAPIView):
+        return models.Recipient.objects.filter(user=self.request.user) # .order_by('-main_recipient', '-created_at')
+
+
+@extend_schema(tags=['Profile'])
+@extend_schema_view(get=extend_schema(summary='ПОЛУЧАТЕЛЬ ПОЛЬЗОВАТЕЛЯ'))
+class ProfileRecipientDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = models.Recipient.objects.all()
     serializer_class = serializers.RecipientUserSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
     
     def get_object(self):
-        return models.Recipient.objects.get(user=self.request.user, id=self.kwargs['pk'])
+        return self.queryset.get(user=self.request.user, id=self.kwargs['pk'])
+    
+    def perform_create(self, serializer):
+        user = self.context['request'].user
+        country = models.Country.objects.get(id=serializer.validated_data['country_id'])
+        recipient = models.Recipient.objects.create(user=user, country=country, **serializer.validated_data)
+        return recipient
+    
+    def perform_update(self, serializer):
+        if self.get_object().status_recipient != 'Отклонен':
+            raise ValidationError('Статус получателя не может быть изменен')
+        return super().perform_update(serializer)
+    
+    def perform_destroy(self, instance):
+        if instance.status_recipient != 'Отклонен':
+            raise ValidationError('Получатель не может быть удален')
+        return super().perform_destroy(instance)
      
 
+@extend_schema(tags=['Profile'])
+@extend_schema_view(get=extend_schema(summary='СДЕЛАТЬ ПОЛУЧАТЕЛЕМ ОСНОВНЫМ'))
+class ProfileRecipientMainAPIView(APIView):
+    queryset = models.Recipient.objects.all()
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+    
+    def post(self, request, pk):
+        try:
+            recipient = self.queryset.get(user=request.user, id=pk)
+        except models.Recipient.DoesNotExist:
+            return Response(data='Получатель не найден', status=status.HTTP_404_NOT_FOUND)
+        if recipient.status_recipient == 'Подтвержден':
+            recipient.main_recipient = True
+            recipient.save()
+            return Response(data='Получатель сделан основным', status=status.HTTP_200_OK)
+        return Response(data='Получатель не может быть сделан основным', status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['Users Utils'])
+@extend_schema_view(post=extend_schema(summary='СМЕНА ПАРОЛЯ ПОЛЬЗОВАТЕЛЯ'))
 class UserClientChangePasswordAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.UserClientChangePasswordSerializer
@@ -144,6 +226,7 @@ class UserClientChangePasswordAPIView(APIView):
     
 
 @extend_schema(tags=['Auth'])
+@extend_schema_view(post=extend_schema(summary='ВХОД В СИСТЕМУ'))
 class UserLoginAPIView(APIView):
     serializer_class = serializers.UserLoginSerializer
     
@@ -181,11 +264,14 @@ class UserLoginAPIView(APIView):
             'is_manager': user.is_manager,
         }, status=status.HTTP_200_OK)
 
+
 @extend_schema(tags=['Auth'])
+@extend_schema_view(post=extend_schema(summary='ОБНОВЛЕНИЕ ТОКЕНА'))
 class UserRefreshAPIView(TokenRefreshView):
     serializer_class = serializers.UserRefreshSerializer
 
 
 @extend_schema(tags=['Auth'])
+@extend_schema_view(post=extend_schema(summary='ВЫХОД ИЗ СИСТЕМЫ'))
 class UserLogoutAPIView(TokenBlacklistView):
     serializer_class = serializers.UserLogoutSerializer

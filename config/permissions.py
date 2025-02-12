@@ -11,9 +11,9 @@ class IsManager(BasePermission):
         return bool(request.user and request.user.is_manager)
 
 
-class IsManagerOrAdmin(BasePermission):
+class IsAdminOrManager(BasePermission):
     def has_permission(self, request, view):
-        return bool(request.user and (request.user.is_manager or request.user.is_admin))
+        return bool(request.user and (request.user.is_admin or request.user.is_manager))
 
 class IsAdminOrReadOnly(BasePermission):
     def has_permission(self, request, view):
