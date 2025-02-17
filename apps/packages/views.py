@@ -10,16 +10,51 @@ from . import models, serializers
 
 @extend_schema(tags=['Посылки'])
 @extend_schema(parameters=[
+    OpenApiParameter('client', OpenApiTypes.STR, description='Клиент'),
+    OpenApiParameter('recipient', OpenApiTypes.STR, description='Получатель'),
+    OpenApiParameter('store', OpenApiTypes.STR, description='Склад'),
+    OpenApiParameter('reys', OpenApiTypes.STR, description='Рейс'),
     OpenApiParameter('status', OpenApiTypes.STR, description='Статус'),
+    OpenApiParameter('date_from', OpenApiTypes.STR, description='Дата от'),
+    OpenApiParameter('date_to', OpenApiTypes.STR, description='Дата до'),
+    OpenApiParameter('date_on_warehouse_from', OpenApiTypes.STR, description='Дата на складе от'),
+    OpenApiParameter('date_on_warehouse_to', OpenApiTypes.STR, description='Дата на складе до'),
 ])
 class PackageListView(ListCreateAPIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrManager]
     
     def get_queryset(self):
         queryset = models.Package.objects.all()
+        if self.request.query_params.get('client'):
+            queryset = queryset.filter(client=self.request.query_params.get('client'))
+        if self.request.query_params.get('recipient'):
+            queryset = queryset.filter(recipient=self.request.query_params.get('recipient'))
+        if self.request.query_params.get('store'):
+            queryset = queryset.filter(store=self.request.query_params.get('store'))
+        if self.request.query_params.get('reys'):
+            queryset = queryset.filter(reys=self.request.query_params.get('reys'))
+        if self.request.query_params.get('warehouse'):
+            queryset = queryset.filter(warehouse=self.request.query_params.get('warehouse'))
         if self.request.query_params.get('status'):
             queryset = queryset.filter(status=self.request.query_params.get('status'))
+        if self.request.query_params.get('date_from'):
+            queryset = queryset.filter(date_from__gte=self.request.query_params.get('date_from'))
+        if self.request.query_params.get('date_to'):
+            queryset = queryset.filter(date_to__lte=self.request.query_params.get('date_to'))
+        if self.request.query_params.get('date_on_warehouse_from'):
+            queryset = queryset.filter(date_on_warehouse__gte=self.request.query_params.get('date_on_warehouse_from'))
+        if self.request.query_params.get('date_on_warehouse_to'):
+            queryset = queryset.filter(date_on_warehouse__lte=self.request.query_params.get('date_on_warehouse_to'))
         return queryset
+        #         query &= (Q(client__last_name__icontains=term) | Q(client__first_name__icontains=term))
+        #     queryset = queryset.filter(query)
+        # recipient = self.request.query_params.get('recipient')
+        # if recipient:
+        #     recipient_terms = recipient.split() 
+        #     query = Q()
+        #     for term in recipient_terms:
+        #         query &= (Q(recipient__last_name__icontains=term) | Q(recipient__first_name__icontains=term))
+        #     queryset = queryset.filter(query)
     
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -100,12 +135,8 @@ class PackageDetailView(RetrieveUpdateAPIView):
     OpenApiParameter('status', OpenApiTypes.STR, description='Статус'),
 ])
 class MyPackageListView(ListCreateAPIView):
+    serializer_class = serializers.PackageCreateSerializer
     permission_classes = [IsAuthenticated]
-    
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return serializers.PackageCreateSerializer
-        return serializers.PackageSerializer
     
     def get_queryset(self):
         queryset = models.Package.objects.filter(client=self.request.user)
@@ -118,8 +149,6 @@ class MyPackageListView(ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         
         package_details = serializer.validated_data.pop('package_details', [])
-        package_images = serializer.validated_data.pop('package_images', [])
-        package_weights = serializer.validated_data.pop('package_weights', [])
         
         package = serializer.save(client=self.request.user)
         
@@ -128,14 +157,6 @@ class MyPackageListView(ListCreateAPIView):
             # Проверка на существование объекта
             for detail in package_details:
                 models.PackageDetail.objects.get_or_create(package=package, **detail)
-        
-        if package_images:
-            for image in package_images:
-                models.PackageImage.objects.get_or_create(package=package, **image)
-        
-        if package_weights:
-            for weight in package_weights:
-                models.PackageWeight.objects.get_or_create(package=package, **weight)
                 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -143,6 +164,7 @@ class MyPackageListView(ListCreateAPIView):
 
 @extend_schema(tags=['Посылки мои'])
 class MyPackageDetailView(RetrieveUpdateAPIView):
+    serializer_class = serializers.PackageCreateSerializer
     lookup_field = 'pk'
     permission_classes = [IsAuthenticated]
     
@@ -150,18 +172,11 @@ class MyPackageDetailView(RetrieveUpdateAPIView):
         queryset = models.Package.objects.filter(client=self.request.user)
         return queryset
     
-    def get_serializer_class(self):
-        if self.request.method == 'PUT' or self.request.method == 'PATCH':
-            return serializers.PackageCreateSerializer
-        return serializers.PackageSerializer
-    
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
         package_details = serializer.validated_data.pop('package_details', [])
-        package_images = serializer.validated_data.pop('package_images', [])
-        package_weights = serializer.validated_data.pop('package_weights', [])
         
         package = serializer.save()
         
@@ -171,16 +186,9 @@ class MyPackageDetailView(RetrieveUpdateAPIView):
             for detail in package_details:
                 models.PackageDetail.objects.update_or_create(package=package, **detail)
         
-        if package_images:
-            for image in package_images:
-                models.PackageImage.objects.update_or_create(package=package, **image)
-        
-        if package_weights:
-            for weight in package_weights:
-                models.PackageWeight.objects.update_or_create(package=package, **weight)
-                
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+
 
 @extend_schema(tags=['Посылки мои'])
 class StatusCountView(ListAPIView):

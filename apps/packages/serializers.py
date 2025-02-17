@@ -70,14 +70,12 @@ class PackageSerializer(serializers.ModelSerializer):
 
 class PackageCreateSerializer(serializers.ModelSerializer):
     package_details = PackageDetailCreateSerializer(many=True, required=False)
-    package_images = PackageImageSerializer(many=True, required=False)
-    package_weights = PackageWeightSerializer(many=True, required=False)
+    status = serializers.CharField(read_only=True)
+    reys = serializers.CharField(read_only=True)
     
     class Meta:
         model = models.Package
-        fields = ['recipient', 'status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
-                  'store', 'reys', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost', 
-                  'client_comment', 'system_comment', 'package_details', 'package_images', 'package_weights']
+        fields = ['id', 'status', 'reys', 'warehouse', 'tracking_number', 'store', 'type_of_packaging', 'recipient', 'package_details',]
     
 
 class PackageAdminCreateSerializer(serializers.ModelSerializer):

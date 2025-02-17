@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAP
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
-from config.permissions import IsAdmin, IsAdminOrManager, IsManager
+from config.permissions import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.exceptions import ValidationError
@@ -111,7 +111,10 @@ class RecipientListAPIView(ListAPIView):
     
 
 @extend_schema(tags=['Users'])
-@extend_schema_view(get=extend_schema(summary='СПИСОК ВСЕХ ПОЛУЧАТЕЛЕЙ ПОЛЬЗОВАТЕЛЯ'))
+@extend_schema_view(
+    get=extend_schema(summary='СПИСОК ВСЕХ ПОЛУЧАТЕЛЕЙ ПОЛЬЗОВАТЕЛЯ'),
+    post=extend_schema(summary='СОЗДАНИЕ ПОЛУЧАТЕЛЯ ПОЛЬЗОВАТЕЛЯ')
+)
 class UserRecipientListCreateAPIView(ListCreateAPIView):
     queryset = models.Recipient.objects.all()
     serializer_class = serializers.RecipientSerializer
@@ -127,16 +130,25 @@ class UserRecipientListCreateAPIView(ListCreateAPIView):
     
 
 @extend_schema(tags=['Users'])
-@extend_schema_view(get=extend_schema(summary='ПОЛЬЗОВАТЕЛЬ'))
-class UserDetailAPIView(RetrieveUpdateAPIView):
+@extend_schema_view(
+    get=extend_schema(summary='ПРОСМОТР ПОЛЬЗОВАТЕЛЯ'),
+    put=extend_schema(summary='ИЗМЕНЕНИЕ ПОЛЬЗОВАТЕЛЯ'),
+    patch=extend_schema(summary='ЧАСТИЧНОЕ ИЗМЕНЕНИЕ ПОЛЬЗОВАТЕЛЯ'),
+    delete=extend_schema(summary='УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ')
+)
+class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [IsAdminOrManager]
+    permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'pk'
     
 
 @extend_schema(tags=['Profile'])
-@extend_schema_view(get=extend_schema(summary='ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ'))
+@extend_schema_view(
+    get=extend_schema(summary='ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ'),
+    put=extend_schema(summary='ИЗМЕНЕНИЕ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ'),
+    patch=extend_schema(summary='ЧАСТИЧНОЕ ИЗМЕНЕНИЕ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ')
+)
 class ProfileDetailAPIView(RetrieveUpdateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserClientSerializer
@@ -147,7 +159,10 @@ class ProfileDetailAPIView(RetrieveUpdateAPIView):
     
 
 @extend_schema(tags=['Profile'])
-@extend_schema_view(get=extend_schema(summary='СПИСОК ВСЕХ ПОЛУЧАТЕЛЕЙ ПОЛЬЗОВАТЕЛЯ'))
+@extend_schema_view(
+    get=extend_schema(summary='СПИСОК ВСЕХ ПОЛУЧАТЕЛЕЙ ПОЛЬЗОВАТЕЛЯ'),
+    post=extend_schema(summary='СОЗДАНИЕ ПОЛУЧАТЕЛЯ ПОЛЬЗОВАТЕЛЯ')
+)
 class ProfileRecipientAPIView(ListCreateAPIView):
     queryset = models.Recipient.objects.all()
     serializer_class = serializers.RecipientUserSerializer
@@ -164,7 +179,12 @@ class ProfileRecipientAPIView(ListCreateAPIView):
 
 
 @extend_schema(tags=['Profile'])
-@extend_schema_view(get=extend_schema(summary='ПОЛУЧАТЕЛЬ ПОЛЬЗОВАТЕЛЯ'))
+@extend_schema_view(
+    get=extend_schema(summary='ПОЛУЧАТЕЛЬ ПОЛЬЗОВАТЕЛЯ'),
+    put=extend_schema(summary='ИЗМЕНЕНИЕ ПОЛУЧАТЕЛЯ ПОЛЬЗОВАТЕЛЯ'),
+    patch=extend_schema(summary='ЧАСТИЧНОЕ ИЗМЕНЕНИЕ ПОЛУЧАТЕЛЯ ПОЛЬЗОВАТЕЛЯ'),
+    delete=extend_schema(summary='УДАЛЕНИЕ ПОЛУЧАТЕЛЯ ПОЛЬЗОВАТЕЛЯ')
+)
 class ProfileRecipientDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = models.Recipient.objects.all()
     serializer_class = serializers.RecipientUserSerializer
