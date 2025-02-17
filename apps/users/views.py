@@ -155,6 +155,12 @@ class ProfileRecipientAPIView(ListCreateAPIView):
     
     def get_queryset(self):
         return models.Recipient.objects.filter(user=self.request.user) # .order_by('-main_recipient', '-created_at')
+    
+    def perform_create(self, serializer):
+        user = self.request.user
+        country = models.Country.objects.get(id=serializer.validated_data['country_id'])
+        recipient = models.Recipient.objects.create(user=user, country=country, **serializer.validated_data)
+        return recipient
 
 
 @extend_schema(tags=['Profile'])
