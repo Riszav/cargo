@@ -6,7 +6,8 @@ from django.db.models import Q
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from . import models, serializers
-
+from apps.users import models as users_models
+from apps.users import serializers as users_serializers
 
 @extend_schema(tags=['Посылки'])
 @extend_schema(parameters=[
@@ -208,9 +209,17 @@ class StatusCountView(ListAPIView):
         if status_count:
             return Response([status_count,])
         return Response([])
+    
 
+@extend_schema(tags=['Посылки мои'])
+class MyRecipientListView(ListAPIView):
+    serializer_class = users_serializers.RecipientUserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        queryset = users_models.Recipient.objects.filter(user=self.request.user, status_recipient='Подтвержден')
+        return queryset
 
-@extend_schema(tags=['Сканы'])
 class LocationListView(ListAPIView):
     serializer_class = serializers.LocationSerializer
     queryset = models.Location.objects.all()
