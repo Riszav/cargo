@@ -13,7 +13,7 @@ class CountryAdmin(admin.ModelAdmin):
 
 class RecipientInline(admin.StackedInline):
     model = models.Recipient
-    extra = 1
+    extra = 0
 
 
 @admin.register(models.User)

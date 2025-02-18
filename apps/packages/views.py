@@ -213,7 +213,7 @@ class StatusCountView(ListAPIView):
 
 @extend_schema(tags=['Посылки мои'])
 class MyRecipientListView(ListAPIView):
-    serializer_class = users_serializers.RecipientUserSerializer
+    serializer_class = users_serializers.MyRecipientSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):

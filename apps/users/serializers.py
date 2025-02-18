@@ -34,6 +34,12 @@ class RecipientUserSerializer(RecipientSerializer):
         model = models.Recipient
         fields = ('id', 'last_name', 'first_name', 'status_recipient', 'address', 'country', 'country_id',
                   'phone_number', 'user', 'passport_image_1', 'passport_image_2', 'main_recipient', 'created_at')
+
+
+class MyRecipientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Recipient
+        fields = ['id', 'last_name', 'first_name']
         
 
 class UserSerializer(serializers.ModelSerializer):
