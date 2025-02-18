@@ -15,6 +15,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category
         fields = '__all__'
+        
+
+class WarehouseDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.WarehouseData
+        fields = '__all__'
+        
 
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)

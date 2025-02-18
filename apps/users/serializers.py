@@ -7,7 +7,7 @@ class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Country
         fields = ['id', 'name', 'is_active']
-
+        
 
 class UserFullNameSerializer(serializers.ModelSerializer):
     class Meta:

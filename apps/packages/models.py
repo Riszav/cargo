@@ -85,7 +85,7 @@ class Store(BaseModel):
 class Package(BaseModel):
     client = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Клиент', related_name='packages', blank=True, null=True)
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Получатель', related_name='packages_recipient', blank=True, null=True)
-    status = models.CharField('Статус', max_length=255, blank=True, choices=STATUS_CHOICES)
+    status = models.CharField('Статус', max_length=255, blank=True, choices=STATUS_CHOICES, default='Проверяется')
     warehouse = models.CharField('Склад', max_length=255, blank=True, choices=WAREHOUSE_CHOICES)
     reys = models.CharField('Рейс', max_length=255, blank=True)
     package_image = models.ImageField('Фото посылки', upload_to='package_images/', blank=True, null=True)
