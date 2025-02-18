@@ -325,27 +325,27 @@ class AWBDetailView(RetrieveUpdateDestroyAPIView):
 class WarehouseDataView(ListAPIView):
     queryset = models.WarehouseData.objects.all()
     serializer_class = serializers.WarehouseDataSerializer
-    permission_classes = [IsAdminOrManager]
+    permission_classes = [IsAuthenticated]
 
 
 @extend_schema(tags=['Choices'])
 class ChoicesView(ListAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
-    permission_classes = [IsAdminOrManager]
+    permission_classes = [IsAuthenticated]
 
 
 @extend_schema(tags=['Choices'])
 class StoreView(ListAPIView):
     queryset = models.Store.objects.all()
     serializer_class = serializers.StoreSerializer
-    permission_classes = [IsAdminOrManager]
+    permission_classes = [IsAuthenticated]
 
 
 @extend_schema(tags=['Choices'])
 class LocationView(ListAPIView):
     queryset = models.Location.objects.all()
     serializer_class = serializers.LocationSerializer
-    permission_classes = [IsAdminOrManager]
+    permission_classes = [IsAuthenticated]
 
 

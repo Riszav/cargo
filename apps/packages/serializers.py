@@ -79,10 +79,13 @@ class PackageCreateSerializer(serializers.ModelSerializer):
     package_details = PackageDetailCreateSerializer(many=True, required=False)
     status = serializers.CharField(read_only=True)
     reys = serializers.CharField(read_only=True)
+    package_image = serializers.ImageField(required=False, read_only=True)
+    label_image = serializers.ImageField(required=False, read_only=True)
+    invoice_image = serializers.ImageField(required=False, read_only=True)
     
     class Meta:
         model = models.Package
-        fields = ['id', 'status', 'reys', 'warehouse', 'tracking_number', 'store', 'type_of_packaging', 'recipient', 'package_details',]
+        fields = ['id', 'status', 'reys', 'warehouse', 'tracking_number', 'store', 'type_of_packaging', 'recipient', 'package_details', 'package_image', 'label_image', 'invoice_image']
     
 
 class PackageAdminCreateSerializer(serializers.ModelSerializer):
