@@ -146,7 +146,7 @@ class MyPackageListView(ListCreateAPIView):
         return queryset
     
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         
         package_details = serializer.validated_data.pop('package_details', [])
@@ -338,9 +338,9 @@ class WarehouseDataView(ListAPIView):
 
 
 @extend_schema(tags=['Choices'])
-class ChoicesView(ListAPIView):
-    queryset = models.Product.objects.all()
-    serializer_class = serializers.ProductSerializer
+class ProductsChoicesView(ListAPIView):
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategoryChoicesSerializer
     permission_classes = [IsAuthenticated]
 
 

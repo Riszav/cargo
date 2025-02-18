@@ -108,7 +108,7 @@ class Package(BaseModel):
     manager_comment = models.TextField('Комментарий менеджера', blank=True)
     
     whole_summa = models.DecimalField('Сумма', blank=True, null=True, decimal_places=2, max_digits=10)
-    # whole_summa_eur = models.DecimalField('Сумма в евро', blank=True, null=True, decimal_places=2, max_digits=10)
+    whole_summa_eur = models.DecimalField('Сумма в евро', blank=True, null=True, decimal_places=2, max_digits=10)
     date_on_warehouse = models.DateTimeField('Дата на складе', blank=True, null=True)
     
     def __str__(self):

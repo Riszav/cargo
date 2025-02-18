@@ -1,15 +1,31 @@
 from rest_framework import serializers
 from . import models
 from apps.users import models as user_models
+from apps.users import serializers as users_serializers
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+
+class ProductChoicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = ['id', 'name']
+        
+
+class CategoryChoicesSerializer(serializers.ModelSerializer):
+    products = ProductChoicesSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = models.Category
+        fields = ['id', 'name', 'products']
 
 
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Store
         fields = '__all__'
+    
     
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -82,11 +98,21 @@ class PackageCreateSerializer(serializers.ModelSerializer):
     package_image = serializers.ImageField(required=False, read_only=True)
     label_image = serializers.ImageField(required=False, read_only=True)
     invoice_image = serializers.ImageField(required=False, read_only=True)
+    # recipient = users_serializers.MyRecipientSerializer(read_only=True)
+    # recipient_id = serializers.S(write_only=True)
     
     class Meta:
         model = models.Package
-        fields = ['id', 'status', 'reys', 'warehouse', 'tracking_number', 'store', 'type_of_packaging', 'recipient', 'package_details', 'package_image', 'label_image', 'invoice_image']
-    
+        fields = ['id', 'status', 'reys', 'warehouse', 'tracking_number', 'store', 'type_of_packaging', 'recipient', 'package_details', 
+                  'package_image', 'label_image', 'invoice_image']
+        
+    # def get_recipient(self, obj):
+    #     request = self.context.get('request')
+    #     if request and request.user.is_authenticated:
+    #         recipient = user_models.Recipient.objects.filter(user=request.user, status_recipient='Подтвержден').first()
+    #         return recipient.id if recipient else None
+    #     return None
+
 
 class PackageAdminCreateSerializer(serializers.ModelSerializer):
     package_details = PackageDetailCreateSerializer(many=True, required=False)

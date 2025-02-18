@@ -20,7 +20,7 @@ urlpatterns = [
     
     path('warehouse-data/', views.WarehouseDataView.as_view(), name='warehouse_data'),
     
-    path('choices/products/', views.ChoicesView.as_view(), name='choices_products'),
+    path('choices/products/', views.ProductsChoicesView.as_view(), name='choices_products'),
     path('choices/store/', views.StoreView.as_view(), name='choices_store'),
     path('choices/location/', views.LocationView.as_view(), name='choices_location'),
 ]
