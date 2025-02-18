@@ -115,10 +115,18 @@ class Package(BaseModel):
         return f'{self.client} - {self.recipient}'
     
     def save(self, *args, **kwargs):
-        if self.status == 'На складе' and self.instance.status != 'На складе':
-            self.date_on_warehouse = timezone.now()
+        # if self.status == 'На складе' and self.instance.status != 'На складе':
+        #     self.date_on_warehouse = timezone.now()
+            
+        if self.pk:
+            try:
+                old_instance = self.__class__.objects.get(pk=self.pk)
+                if self.status == 'На складе' and old_instance.status != 'На складе':
+                    self.date_on_warehouse = timezone.now()
+            except self.__class__.DoesNotExist:
+                pass
         super().save(*args, **kwargs)
-    
+
     class Meta:
         verbose_name = 'Посылка'
         verbose_name_plural = 'Посылки'
