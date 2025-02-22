@@ -1,5 +1,6 @@
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from config.permissions import *
 from django.db.models import Q
@@ -8,6 +9,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from . import models, serializers
 from apps.users import models as users_models
 from apps.users import serializers as users_serializers
+from config.choices import *
+
 
 @extend_schema(tags=['Посылки'])
 @extend_schema(parameters=[
@@ -358,3 +361,7 @@ class LocationView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
+@extend_schema(tags=['Choices'])
+class PackageStatusView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response(STATUS_CHOICES)

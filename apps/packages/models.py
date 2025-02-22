@@ -2,38 +2,7 @@ from django.db import models
 from apps.users.models import User
 from config.base_model import BaseModel
 from django.utils import timezone
-
-
-STATUS_CHOICES = [
-    ('Проверяется', 'Проверяется'),
-    ('Ждем на склад', 'Ждем на склад'),
-    ('На складе', 'На складе'),
-    ('Отправлена', 'Отправлена'),
-    ('На обработке', 'На обработке'),
-    ('Прибыла', 'Прибыла'),
-    ('Доставлена заказчику', 'Доставлена заказчику'),
-    ('Неправильный трекинг номер', 'Неправильный трекинг номер'),
-    ('Возвращена отправителю', 'Возвращена отправителю'),
-    ('Задержана на складе', 'Задержана на складе'),
-    ('Отменена', 'Отменена'),
-]
-
-WAREHOUSE_CHOICES = [
-    ('США', 'США'),
-    ('Турция', 'Турция'),
-    ('Китай', 'Китай'),
-    ('Япония', 'Япония'),
-]
-
-TYPE_OF_PACKAGING_CHOICES = [
-    ('Пакет', 'Пакет'),
-    ('Коробка', 'Коробка'),
-]
-
-OPTIONS_OF_PACKAGING_CHOICES = [
-    ('Отправить в почтовой упаковке', 'Отправить в почтовой упаковке'),
-    ('Сохранить обувную коробку', 'Сохранить обувную коробку'),
-]
+from config.choices import *
 
 
 class WarehouseData(BaseModel):
@@ -216,11 +185,6 @@ class Location(BaseModel):
         verbose_name_plural = 'Локации'
         ordering = ['-created_at']
 
-
-SCAN_TYPE_CHOICES = [
-    ('Входящие', 'Входящие'),
-    ('Исходящие', 'Исходящие'),
-]   
 
 class Scan(BaseModel):
     tracking_number = models.CharField('Трек номер', max_length=255, blank=True)

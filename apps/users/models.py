@@ -1,19 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import UserManager
-
-
-STATUS_RECIPIENT = (    
-    ('Проверяется', 'Проверяется'),
-    ('Отклонен', 'Отклонен'),
-    ('Подтвержден', 'Подтвержден'),
-)
-
-
-STATUS_TARIF = (    
-    ('Новичок', 'Новичок'),
-    ('VIP', 'VIP'),
-)
+from config.choices import *
 
 
 class Country(models.Model):
