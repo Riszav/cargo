@@ -121,7 +121,7 @@ class PackageWeightsDeleteView(APIView):
 
 
 @extend_schema(tags=['Посылки'])
-class PackageDetailView(RetrieveUpdateAPIView):
+class PackageDetailView(RetrieveUpdateDestroyAPIView):
     queryset = models.Package.objects.all()
     serializer_class = serializers.PackageSerializer
     lookup_field = 'pk'
@@ -190,7 +190,7 @@ class MyPackageListView(ListCreateAPIView):
 
 
 @extend_schema(tags=['Посылки мои'])
-class MyPackageDetailView(RetrieveUpdateAPIView):
+class MyPackageDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.PackageCreateSerializer
     lookup_field = 'pk'
     permission_classes = [IsAuthenticated]
