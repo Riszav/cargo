@@ -89,8 +89,8 @@ class PackageListView(ListCreateAPIView):
             for weight in package_weights:
                 models.PackageWeight.objects.get_or_create(package=package, **weight)
                 
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        # headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 
 @extend_schema(tags=['Посылки'])
@@ -130,8 +130,8 @@ class PackageDetailView(RetrieveUpdateAPIView):
             for weight in package_weights:
                 models.PackageWeight.objects.update_or_create(package=package, **weight)
                 
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+        # headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Посылки мои'])
@@ -162,8 +162,8 @@ class MyPackageListView(ListCreateAPIView):
             for detail in package_details:
                 models.PackageDetail.objects.get_or_create(package=package, **detail)
                 
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        # headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @extend_schema(tags=['Посылки мои'])
@@ -190,8 +190,8 @@ class MyPackageDetailView(RetrieveUpdateAPIView):
             for detail in package_details:
                 models.PackageDetail.objects.update_or_create(package=package, **detail)
         
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+        # headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Посылки мои'])
@@ -365,3 +365,21 @@ class LocationView(ListAPIView):
 class PackageStatusView(APIView):
     def get(self, request, *args, **kwargs):
         return Response(STATUS_CHOICES)
+
+
+@extend_schema(tags=['Choices'])
+class RecipientView(ListAPIView):
+    queryset = users_models.Recipient.objects.all()
+    serializer_class = serializers.ClientSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        queryset = users_models.Recipient.objects.filter(status_recipient='Подтвержден')
+        return queryset
+
+
+@extend_schema(tags=['Choices'])
+class UserView(ListAPIView):
+    queryset = users_models.User.objects.all()
+    serializer_class = serializers.ClientSerializer
+    permission_classes = [IsAuthenticated]

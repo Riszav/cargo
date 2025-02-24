@@ -75,7 +75,13 @@ class PackageWeightSerializer(serializers.ModelSerializer):
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name']
+        fields = ['id', 'first_name', 'last_name']
+
+
+class RecipientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = user_models.Recipient
+        fields = ['id', 'first_name', 'last_name', 'user']
 
 
 class PackageSerializer(serializers.ModelSerializer):

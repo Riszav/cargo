@@ -24,4 +24,6 @@ urlpatterns = [
     path('choices/store/', views.StoreView.as_view(), name='choices_store'),
     path('choices/location/', views.LocationView.as_view(), name='choices_location'),
     path('choices/status/', views.PackageStatusView.as_view(), name='choices_status'),
+    path('choices/recipient/', views.RecipientView.as_view(), name='choices_recipient'),
+    path('choices/user/', views.UserView.as_view(), name='choices_user'),
 ]
