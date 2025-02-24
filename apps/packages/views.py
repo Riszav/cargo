@@ -91,7 +91,34 @@ class PackageListView(ListCreateAPIView):
                 
         # headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@extend_schema(tags=['Удаление деталей посылки'])
+class PackageDetailsDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
     
+    def delete(self, request, *args, **kwargs):
+        models.PackageDetail.objects.filter(package=kwargs['pk']).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+@extend_schema(tags=['Удаление деталей посылки'])
+class PackageImagesDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, *args, **kwargs):
+        models.PackageImage.objects.filter(package=kwargs['pk']).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(tags=['Удаление деталей посылки'])
+class PackageWeightsDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, *args, **kwargs):
+        models.PackageWeight.objects.filter(package=kwargs['pk']).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 @extend_schema(tags=['Посылки'])
 class PackageDetailView(RetrieveUpdateAPIView):
