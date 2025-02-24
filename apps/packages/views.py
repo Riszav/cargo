@@ -106,15 +106,12 @@ class PackageDetailView(RetrieveUpdateAPIView):
         return serializers.PackageSerializer
     
     
-    def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
+    def perform_update(self, serializer):
         package_details = serializer.validated_data.pop('package_details', [])
         package_images = serializer.validated_data.pop('package_images', [])
         package_weights = serializer.validated_data.pop('package_weights', [])
         
-        package = serializer.save()
+        package = serializer.instance
         
         # Создаём связанные объекты, если их ещё нет
         if package_details:
@@ -129,9 +126,8 @@ class PackageDetailView(RetrieveUpdateAPIView):
         if package_weights:
             for weight in package_weights:
                 models.PackageWeight.objects.update_or_create(package=package, **weight)
-                
-        # headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return serializer.save()
 
 
 @extend_schema(tags=['Посылки мои'])
@@ -176,13 +172,10 @@ class MyPackageDetailView(RetrieveUpdateAPIView):
         queryset = models.Package.objects.filter(client=self.request.user)
         return queryset
     
-    def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
+    def perform_update(self, serializer):
         package_details = serializer.validated_data.pop('package_details', [])
         
-        package = serializer.save()
+        package = serializer.instance
         
         # Создаём связанные объекты, если их ещё нет
         if package_details:
@@ -190,9 +183,7 @@ class MyPackageDetailView(RetrieveUpdateAPIView):
             for detail in package_details:
                 models.PackageDetail.objects.update_or_create(package=package, **detail)
         
-        # headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        return serializer.save()
 
 @extend_schema(tags=['Посылки мои'])
 class StatusCountView(ListAPIView):
