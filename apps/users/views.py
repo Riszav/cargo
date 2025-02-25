@@ -123,8 +123,8 @@ class RecipientDetailAPIView(RetrieveUpdateDestroyAPIView):
         if country_id:
             country = models.Country.objects.get(id=country_id)
             serializer.save(country=country)
-        return serializer
-
+        return serializer.save()
+    
 
 @extend_schema(tags=['Users'])
 @extend_schema_view(
@@ -163,7 +163,7 @@ class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
         if country_id:
             country = models.Country.objects.get(id=country_id)
             serializer.save(country=country)
-        return serializer
+        return serializer.save()
 
 
 @extend_schema(tags=['Profile'])
