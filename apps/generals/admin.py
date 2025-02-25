@@ -52,7 +52,7 @@ class ApplicationSettingsAdmin(TabbedTranslationAdmin, BaseSoloAdmin):
     
 
 @admin.register(models.Application)
-class ApplicationAdmin(TabbedTranslationAdmin, BaseImageAdmin):
+class ApplicationAdmin(BaseImageAdmin):
     list_display = ['name', 'phone', 'email', 'message']
     list_display_links = ['name', 'phone', 'email', 'message']
     search_fields = ['name', 'phone', 'email', 'message']
@@ -68,7 +68,7 @@ class FAQAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     
 
 @admin.register(models.Gallery)
-class GalleryAdmin(TabbedTranslationAdmin, BaseImageAdmin):
+class GalleryAdmin(BaseImageAdmin):
     list_display = ['view_min']
     list_display_links = ['view_min']
     fields = ['image', 'view_max']
