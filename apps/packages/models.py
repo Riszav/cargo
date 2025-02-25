@@ -3,7 +3,7 @@ from apps.users.models import User
 from config.base_model import BaseModel
 from django.utils import timezone
 from config.choices import *
-
+from apps.packages.utils import update_tarif
 
 class WarehouseData(BaseModel):
     usa_address_1 = models.CharField('Адрес 1', max_length=255, blank=True)
@@ -94,7 +94,9 @@ class Package(BaseModel):
                     self.date_on_warehouse = timezone.now()
             except self.__class__.DoesNotExist:
                 pass
-        super().save(*args, **kwargs)
+        
+        update_tarif(self)
+        super().save(*args, **kwargs)  
 
     class Meta:
         verbose_name = 'Посылка'
