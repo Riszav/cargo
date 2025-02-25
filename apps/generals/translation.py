@@ -39,7 +39,7 @@ class HowItWorksTranslationOptions(TranslationOptions):
 
 @register(models.PriceAndPayment)
 class PriceAndPaymentTranslationOptions(TranslationOptions):
-    fields = ('weight', 'type_of_service', 'price_usa', 'price_turkey', 'price_china_air', 'price_china_car', 'commission')
+    fields = ('type_of_service', 'price_usa', 'price_turkey', 'price_china_air', 'price_china_car', 'commission')
     
     
 @register(models.PaymentData)
@@ -54,5 +54,5 @@ class NewsTranslationOptions(TranslationOptions):
     
 @register(models.PVZ)
 class PVZTranslationOptions(TranslationOptions):
-    fields = ('title', 'location', 'phone_number', 'working_hours')
+    fields = ('title', 'location','working_hours')
    
