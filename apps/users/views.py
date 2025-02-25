@@ -156,6 +156,12 @@ class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'pk'
     
+    def perform_update(self, serializer):
+        country_id = serializer.validated_data.pop('country_id')
+        country = models.Country.objects.get(id=country_id)
+        serializer.save(country=country)
+        return serializer
+
 
 @extend_schema(tags=['Profile'])
 @extend_schema_view(

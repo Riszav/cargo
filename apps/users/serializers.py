@@ -43,11 +43,12 @@ class MyRecipientSerializer(serializers.ModelSerializer):
         
 
 class UserSerializer(serializers.ModelSerializer):
-    country = CountrySerializer()
-    recipients = RecipientUserSerializer(many=True)
+    country = CountrySerializer(read_only=True)
+    country_id = serializers.IntegerField(write_only=True)
+    recipients = RecipientUserSerializer(many=True, required=False)
     class Meta:
         model = models.User
-        fields = ['id', 'client_id', 'last_name', 'first_name', 'country', 'phone_number', 'email', 
+        fields = ['id', 'client_id', 'last_name', 'first_name', 'country', 'country_id', 'phone_number', 'email', 
                   'tarif_usa', 'tarif_usa_value', 'tarif_turkey', 'tarif_turkey_value', 'tarif_china', 'tarif_china_value', 'tarif_japan', 'tarif_japan_value',
                   'recipients']
 
