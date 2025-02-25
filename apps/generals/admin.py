@@ -1,10 +1,10 @@
 from django.contrib import admin
 from config.base_admin import BaseSoloAdmin, BaseImageAdmin
+from modeltranslation.admin import TabbedTranslationAdmin, TranslationStackedInline
 from . import models
 
-
 @admin.register(models.Banner)
-class BannerAdmin(BaseImageAdmin):
+class BannerAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['title', 'view_min']
     list_display_links = ['title', 'view_min']
     fields = ['title', 'image', 'view_max']
@@ -14,7 +14,7 @@ class BannerAdmin(BaseImageAdmin):
 
 
 @admin.register(models.AboutUs)
-class AboutUsAdmin(BaseImageAdmin):
+class AboutUsAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['title', 'view_min']
     list_display_links = ['title', 'view_min']
     fields = ['title', 'description', 'image', 'view_max']
@@ -24,7 +24,7 @@ class AboutUsAdmin(BaseImageAdmin):
 
 
 @admin.register(models.AboutUsPage)
-class AboutUsPageAdmin(BaseSoloAdmin, BaseImageAdmin):
+class AboutUsPageAdmin(TabbedTranslationAdmin, BaseSoloAdmin, BaseImageAdmin):
     list_display = ['text', 'view_min1', 'view_min2']
     list_display_links = ['text', 'view_min1', 'view_min2']
     fields = ['text', 'image1', 'view_max1', 'image2', 'view_max2']
@@ -34,7 +34,7 @@ class AboutUsPageAdmin(BaseSoloAdmin, BaseImageAdmin):
 
 
 @admin.register(models.OurServices)
-class OurServicesAdmin(BaseImageAdmin):
+class OurServicesAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['title', 'view_min']
     list_display_links = ['title', 'view_min']
     fields = ['title', 'description', 'image', 'view_max']
@@ -44,7 +44,7 @@ class OurServicesAdmin(BaseImageAdmin):
     
     
 @admin.register(models.ApplicationSettings)
-class ApplicationSettingsAdmin(BaseSoloAdmin):
+class ApplicationSettingsAdmin(TabbedTranslationAdmin, BaseSoloAdmin):
     list_display = ['title']
     list_display_links = ['title']
     search_fields = ['title']
@@ -52,7 +52,7 @@ class ApplicationSettingsAdmin(BaseSoloAdmin):
     
 
 @admin.register(models.Application)
-class ApplicationAdmin(BaseImageAdmin):
+class ApplicationAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['name', 'phone', 'email', 'message']
     list_display_links = ['name', 'phone', 'email', 'message']
     search_fields = ['name', 'phone', 'email', 'message']
@@ -60,7 +60,7 @@ class ApplicationAdmin(BaseImageAdmin):
     
 
 @admin.register(models.FAQ)
-class FAQAdmin(BaseImageAdmin):
+class FAQAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['question', 'answer']
     list_display_links = ['question', 'answer']
     search_fields = ['question', 'answer']
@@ -68,7 +68,7 @@ class FAQAdmin(BaseImageAdmin):
     
 
 @admin.register(models.Gallery)
-class GalleryAdmin(BaseImageAdmin):
+class GalleryAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['view_min']
     list_display_links = ['view_min']
     fields = ['image', 'view_max']
@@ -78,7 +78,7 @@ class GalleryAdmin(BaseImageAdmin):
     
     
 @admin.register(models.HowItWorks)
-class HowItWorksAdmin(BaseImageAdmin):
+class HowItWorksAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['title', 'view_min']
     list_display_links = ['title', 'view_min']
     fields = ['title', 'description', 'image', 'view_max']
@@ -88,7 +88,7 @@ class HowItWorksAdmin(BaseImageAdmin):
     
 
 @admin.register(models.PriceAndPayment)
-class PriceAndPaymentAdmin(BaseImageAdmin):
+class PriceAndPaymentAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['weight', 'type_of_service', 'price_usa', 'price_turkey', 'price_china_air', 'price_china_car', 'commission']
     list_display_links = ['weight', 'type_of_service', 'price_usa', 'price_turkey', 'price_china_air', 'price_china_car', 'commission']
     search_fields = ['weight', 'type_of_service', 'price_usa', 'price_turkey', 'price_china_air', 'price_china_car', 'commission']
@@ -96,7 +96,7 @@ class PriceAndPaymentAdmin(BaseImageAdmin):
     
     
 @admin.register(models.PaymentData)
-class PaymentDataAdmin(BaseSoloAdmin):
+class PaymentDataAdmin(TabbedTranslationAdmin, BaseSoloAdmin):
     list_display = ['subtitle', 'description', 'description_weight', 'text_weight', 'description_payment']
     list_display_links = ['subtitle', 'description', 'description_weight', 'text_weight', 'description_payment']
     search_fields = ['subtitle', 'description', 'description_weight', 'text_weight', 'description_payment']
@@ -104,7 +104,7 @@ class PaymentDataAdmin(BaseSoloAdmin):
 
 
 @admin.register(models.News)
-class NewsAdmin(BaseImageAdmin):
+class NewsAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['title',]
     list_display_links = ['title',]
     search_fields = ['title', 'description']
@@ -112,7 +112,7 @@ class NewsAdmin(BaseImageAdmin):
 
 
 @admin.register(models.PVZ)
-class PVZAdmin(BaseImageAdmin):
+class PVZAdmin(TabbedTranslationAdmin, BaseImageAdmin):
     list_display = ['title', 'location', 'phone_number', 'working_hours']
     list_display_links = ['title', 'location', 'phone_number', 'working_hours']
     search_fields = ['title', 'location', 'phone_number', 'working_hours']
