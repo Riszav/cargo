@@ -108,7 +108,21 @@ class RecipientListAPIView(ListAPIView):
         if self.request.query_params.get('user_id'):
             queryset = queryset.filter(user_id=self.request.query_params.get('user_id'))
         return queryset
+
+
+@extend_schema(tags=['Users'])
+@extend_schema_view(get=extend_schema(summary='ДЕТАЛИ ПОЛУЧАТЕЛЯ'))
+class RecipientDetailAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = models.Recipient.objects.all()
+    serializer_class = serializers.RecipientSerializer
+    permission_classes = [IsAdminOrManager]
+    lookup_field = 'pk'
     
+    def perform_update(self, serializer):
+        country = models.Country.objects.get(id=serializer.validated_data['country_id'])
+        serializer.save(country=country)
+        return serializer
+
 
 @extend_schema(tags=['Users'])
 @extend_schema_view(
