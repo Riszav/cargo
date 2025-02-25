@@ -119,8 +119,10 @@ class RecipientDetailAPIView(RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
     
     def perform_update(self, serializer):
-        country = models.Country.objects.get(id=serializer.validated_data['country_id'])
-        serializer.save(country=country)
+        country_id = serializer.validated_data.pop('country_id', None)
+        if country_id:
+            country = models.Country.objects.get(id=country_id)
+            serializer.save(country=country)
         return serializer
 
 
@@ -157,9 +159,10 @@ class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
     
     def perform_update(self, serializer):
-        country_id = serializer.validated_data.pop('country_id')
-        country = models.Country.objects.get(id=country_id)
-        serializer.save(country=country)
+        country_id = serializer.validated_data.pop('country_id', None)
+        if country_id:
+            country = models.Country.objects.get(id=country_id)
+            serializer.save(country=country)
         return serializer
 
 
