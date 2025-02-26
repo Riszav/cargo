@@ -6,7 +6,7 @@ urlpatterns = [
     path('packages/<int:pk>/', views.PackageDetailView.as_view(), name='package_detail'),
     path('packages-details/<int:pk>/', views.PackageDetailsDeleteView.as_view(), name='package_details_delete'),
     path('packages-images/<int:pk>/', views.PackageImagesDeleteView.as_view(), name='package_images_delete'),
-    path('packages-weights/<int:pk>/s', views.PackageWeightsDeleteView.as_view(), name='package_weights_delete'),
+    path('packages-weights/<int:pk>/', views.PackageWeightsDeleteView.as_view(), name='package_weights_delete'),
     
     path('my-packages/', views.MyPackageListView.as_view(), name='my_package_list'),
     path('my-packages/<int:pk>/', views.MyPackageDetailView.as_view(), name='my_package_detail'),

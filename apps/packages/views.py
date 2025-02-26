@@ -98,7 +98,7 @@ class PackageDetailsDeleteView(APIView):
     permission_classes = [IsAuthenticated]
     
     def delete(self, request, *args, **kwargs):
-        models.PackageDetail.objects.filter(package=kwargs['pk']).delete()
+        models.PackageDetail.objects.filter(id=kwargs['pk']).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
@@ -107,7 +107,7 @@ class PackageImagesDeleteView(APIView):
     permission_classes = [IsAuthenticated]
     
     def delete(self, request, *args, **kwargs):
-        models.PackageImage.objects.filter(package=kwargs['pk']).delete()
+        models.PackageImage.objects.filter(id=kwargs['pk']).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -116,7 +116,7 @@ class PackageWeightsDeleteView(APIView):
     permission_classes = [IsAuthenticated]
     
     def delete(self, request, *args, **kwargs):
-        models.PackageWeight.objects.filter(package=kwargs['pk']).delete()
+        models.PackageWeight.objects.filter(id=kwargs['pk']).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

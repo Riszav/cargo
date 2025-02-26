@@ -5,6 +5,7 @@ from django.utils import timezone
 from config.choices import *
 from apps.packages.utils import update_tarif
 
+
 class WarehouseData(BaseModel):
     usa_address_1 = models.CharField('Адрес 1', max_length=255, blank=True)
     usa_address_2 = models.CharField('Адрес 2', max_length=255, blank=True)
