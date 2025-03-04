@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from config.permissions import *
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.contrib.postgres.aggregates import ArrayAgg
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from . import models, serializers
@@ -72,8 +73,12 @@ class PackageListView(ListCreateAPIView):
         package_details = serializer.validated_data.pop('package_details', [])
         package_images = serializer.validated_data.pop('package_images', [])
         package_weights = serializer.validated_data.pop('package_weights', [])
+        reys = serializer.validated_data.pop('reys', None)
         
-        package = serializer.save()
+        if reys:
+            reys = models.Reys.objects.get(year=reys['year'], number=reys['number'])
+            
+        package = serializer.save(reys=reys)
         
         # Создаём связанные объекты, если их ещё нет
         if package_details:
@@ -137,6 +142,10 @@ class PackageDetailView(RetrieveUpdateDestroyAPIView):
         package_details = serializer.validated_data.pop('package_details', [])
         package_images = serializer.validated_data.pop('package_images', [])
         package_weights = serializer.validated_data.pop('package_weights', [])
+        reys = serializer.validated_data.pop('reys', None)
+        
+        if reys:
+            reys = models.Reys.objects.get(year=reys['year'], number=reys['number'])
         
         package = serializer.instance
         
@@ -154,7 +163,7 @@ class PackageDetailView(RetrieveUpdateDestroyAPIView):
             for weight in package_weights:
                 models.PackageWeight.objects.update_or_create(package=package, **weight)
         
-        return serializer.save()
+        return serializer.save(reys=reys)
 
 
 @extend_schema(tags=['Посылки мои'])
@@ -401,3 +410,13 @@ class UserView(ListAPIView):
     queryset = users_models.User.objects.all()
     serializer_class = serializers.ClientSerializer
     permission_classes = [IsAuthenticated]
+    
+            
+@extend_schema(tags=['Choices'])
+class ReysView(APIView):
+    # permission_classes = [IsAdminOrManager]
+    
+    def get(self, request, *args, **kwargs):
+        reys = models.Reys.objects.all().order_by('year', 'number').values('year', 'number').distinct()
+        return Response(reys)
+

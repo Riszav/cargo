@@ -39,6 +39,13 @@ class StoreAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+@admin.register(models.Reys)
+class ReysAdmin(admin.ModelAdmin):
+    list_display = ['id', 'year', 'number']
+    list_display_links = ['id', 'year', 'number']
+    search_fields = ['year', 'number']
+
+
 class PackageDetailInline(admin.TabularInline):
     model = models.PackageDetail
     extra = 1

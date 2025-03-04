@@ -84,10 +84,17 @@ class RecipientSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'user']
 
 
+class ReysSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Reys
+        fields = ['id', 'year', 'number']
+
+
 class PackageSerializer(serializers.ModelSerializer):
     package_details = PackageDetailSerializer(many=True, required=False, read_only=True)
     package_images = PackageImageSerializer(many=True, required=False, read_only=True)
     package_weights = PackageWeightSerializer(many=True, required=False, read_only=True)
+    reys = ReysSerializer(read_only=True)
     store = StoreSerializer(read_only=True)
     client = ClientSerializer(read_only=True)
     recipient = ClientSerializer(read_only=True)
@@ -100,7 +107,7 @@ class PackageSerializer(serializers.ModelSerializer):
 class PackageCreateSerializer(serializers.ModelSerializer):
     package_details = PackageDetailCreateSerializer(many=True, required=False)
     status = serializers.CharField(read_only=True)
-    reys = serializers.CharField(read_only=True)
+    reys = ReysSerializer(read_only=True)
     package_image = serializers.ImageField(required=False, read_only=True)
     label_image = serializers.ImageField(required=False, read_only=True)
     invoice_image = serializers.ImageField(required=False, read_only=True)
@@ -124,6 +131,7 @@ class PackageAdminCreateSerializer(serializers.ModelSerializer):
     package_details = PackageDetailCreateSerializer(many=True, required=False)
     package_images = PackageImageSerializer(many=True, required=False)
     package_weights = PackageWeightSerializer(many=True, required=False)
+    reys = ReysSerializer(required=False)
     
     class Meta:
         model = models.Package
@@ -186,6 +194,7 @@ class AWBFileSerializer(serializers.ModelSerializer):
 
 class AWBSerializer(serializers.ModelSerializer):
     awb_files = AWBFileSerializer(many=True, required=False)
+    reys = ReysSerializer(required=False)
     
     class Meta:
         model = models.AWB

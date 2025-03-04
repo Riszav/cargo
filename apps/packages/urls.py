@@ -29,4 +29,5 @@ urlpatterns = [
     path('choices/status/', views.PackageStatusView.as_view(), name='choices_status'),
     path('choices/recipient/', views.RecipientView.as_view(), name='choices_recipient'),
     path('choices/user/', views.UserView.as_view(), name='choices_user'),
+    path('choices/reys/', views.ReysView.as_view(), name='choices_reys'),
 ]

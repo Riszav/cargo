@@ -52,12 +52,25 @@ class Store(BaseModel):
         ordering = ['-created_at']
         
 
+class Reys(BaseModel):
+    year = models.CharField('Год', max_length=255, blank=True)
+    number = models.CharField('Номер', max_length=255, blank=True)
+    
+    def __str__(self):
+        return f'{self.year} - {self.number}'
+    
+    class Meta:
+        verbose_name = 'Рейс'
+        verbose_name_plural = 'Рейсы'
+        ordering = ['-created_at']
+        
+        
 class Package(BaseModel):
     client = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Клиент', related_name='packages', blank=True, null=True)
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Получатель', related_name='packages_recipient', blank=True, null=True)
     status = models.CharField('Статус', max_length=255, blank=True, choices=STATUS_CHOICES, default='Проверяется')
     warehouse = models.CharField('Склад', max_length=255, blank=True, choices=WAREHOUSE_CHOICES)
-    reys = models.CharField('Рейс', max_length=255, blank=True)
+    reys = models.ForeignKey(Reys, on_delete=models.CASCADE, verbose_name='Рейс', related_name='packages', blank=True, null=True)
     package_image = models.ImageField('Фото посылки', upload_to='package_images/', blank=True, null=True)
     label_image = models.ImageField('Фото лэйбла', upload_to='label_images/', blank=True, null=True)
     invoice_image = models.ImageField('Фото инвойса', upload_to='invoice_images/', blank=True, null=True)
@@ -209,7 +222,7 @@ class AWB(BaseModel):
     number = models.CharField('Номер', max_length=255, blank=True)
     count_place = models.IntegerField('Количество мест', blank=True, null=True)
     weight = models.FloatField('Вес', blank=True, null=True)
-    reys = models.CharField('Рейс', max_length=255, blank=True)
+    reys = models.ForeignKey(Reys, on_delete=models.CASCADE, verbose_name='Рейс', related_name='awbs', blank=True, null=True)
     date = models.DateTimeField('Дата', blank=True, null=True)
     warehouse = models.CharField('Склад', max_length=255, blank=True, choices=WAREHOUSE_CHOICES)
     sender = models.CharField('Отправитель', max_length=255, blank=True)
