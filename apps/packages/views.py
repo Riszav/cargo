@@ -76,7 +76,7 @@ class PackageListView(ListCreateAPIView):
         reys = serializer.validated_data.pop('reys', None)
         
         if reys:
-            reys = models.Reys.objects.get(year=reys['year'], number=reys['number'])
+            reys = models.Reys.objects.get_or_create(year=reys['year'], number=reys['number'])
             
         package = serializer.save(reys=reys)
         
@@ -145,7 +145,7 @@ class PackageDetailView(RetrieveUpdateDestroyAPIView):
         reys = serializer.validated_data.pop('reys', None)
         
         if reys:
-            reys = models.Reys.objects.get(year=reys['year'], number=reys['number'])
+            reys = models.Reys.objects.get_or_create(year=reys['year'], number=reys['number'])
         
         package = serializer.instance
         
