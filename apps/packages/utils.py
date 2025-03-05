@@ -41,4 +41,5 @@ def update_tarif(self):
     
     
 def send_message(self):
+    pass
     
