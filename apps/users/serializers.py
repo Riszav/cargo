@@ -54,11 +54,16 @@ class UserSerializer(serializers.ModelSerializer):
                   'recipients']
 
 
+class EmailConfirmationSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255)
+
+
 class UserCreateSerializer(serializers.Serializer):
     last_name = serializers.CharField(max_length=255)
     first_name = serializers.CharField(max_length=255)
     phone_number = serializers.CharField(max_length=20)
     email = serializers.EmailField(max_length=255)
+    code = serializers.CharField(max_length=6)
     password = serializers.CharField(min_length=8, max_length=50, write_only=True)
     country_id = serializers.IntegerField()
     address = serializers.CharField(max_length=255)

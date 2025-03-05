@@ -42,19 +42,37 @@ def update_tarif(self):
     
     
 def send_message(self):
-    if self.status == 'Прибыла':
+    if self.status == 'Прибыла' and self.old_status != 'Прибыла':
         send_mail(
-            f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
-            f'Посылка {self.id} прибыла на склад',
-            DEFAULT_FROM_EMAIL,
-            [self.client.email]
+            subject=f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
+            message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n'
+                    f'Мы рады сообщить, что наш склад в "{self.warehouse}" переезжает на новый адрес. это позволит нам улучшить качество обслуживания и обработку ваших отправлений.\n'
+                    f'Важно: Старый склад будет работать только до 1 апреля. После этой даты мы не сможем гарантировать получение и обработку посылок, отправленных на старый адрес.\n'
+                    f'Пожалуйста, обязательно обновите адрес в своих заказах, чтобы избежать возможных проблем с доставкой!\n'
+                    f'Актуальные адреса склада уже доступны в вашем личном кабинете: https://easyexpress.kg/cabinet\n'
+                    f'Пожалуйста, проверьте и используйте новый адрес при оформлении заказов!\n'
+                    f'Спасибо, что выбираете Easy Express!\n'
+                    f'Статус Вашей посылки был изменен на Прибыла в Бишкек из “{self.warehouse}”.\n'
+                    f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n'
+                    f'Вес посылки: {self.final_weight} кг. , стоимость доставки составляет: {self.delivery_cost} USD\n'
+                    f'Комментарий: {self.system_comment}\n'
+                    f'Забрать посылку можно в нашем офисе по адресу: ул. Юсупа Абдрахманова, 204, ТЦ «Тюльпан», 1 этаж офис NQ2, напротив отеля Hyatt Regency (вход с ул. Юсупа Абдрахманова).\n'
+                    f'С Уважением,\n'
+                    f'Easy Express\n',
+            from_email=DEFAULT_FROM_EMAIL,
+            recipient_list=[self.client.email]
         )
-    elif self.status == 'Отправлена':
+    elif self.status == 'Отправлена' and self.old_status != 'Отправлена':
         send_mail(
-            f'Ваша посылка: "{self.tracking_number}" Отправлена из  "{self.warehouse}"',
-            f'Посылка {self.id} отправлена',
-            DEFAULT_FROM_EMAIL,
-            [self.client.email]
+            subject=f'Ваша посылка: "{self.tracking_number}" Отправлена из  "{self.warehouse}"',
+            message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n'
+                    f'Статус Вашей посылки "На складе в {self.warehouse}" был изменен на Отправлена из "{self.warehouse}".\n'
+                    f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n'
+                    f'Как только Ваша посылка будет в Бишкек, мы уведомим вас по электронной почте.\n'
+                    f'С Уважением,\n'
+                    f'MOI CARGO',
+            from_email=DEFAULT_FROM_EMAIL,
+            recipient_list=[self.client.email]
         )
     else:
         pass

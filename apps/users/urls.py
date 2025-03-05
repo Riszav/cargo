@@ -3,9 +3,11 @@ from . import views
 
 
 urlpatterns = [
+    path('users/create/', views.UserCreateAPIView.as_view(), name='user-create'),
+    path('users/confirm-email/', views.EmailConfirmationAPIView.as_view(), name='email-confirmation'),
+    
     path('countries/', views.CountryListAPIView.as_view(), name='country-list'),
     path('users/', views.UserListAPIView.as_view(), name='user-list'),
-    path('users/create/', views.UserCreateAPIView.as_view(), name='user-create'),
     path('users/<int:pk>/', views.UserDetailAPIView.as_view(), name='user-detail'),
     path('users/<int:pk>/recipients/', views.UserRecipientListCreateAPIView.as_view(), name='user-recipient-list-create'),
     path('users/recipients/', views.RecipientListAPIView.as_view(), name='recipient-list'),

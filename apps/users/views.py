@@ -11,6 +11,7 @@ from django.utils import timezone
 from rest_framework import status
 from . import models, serializers
 from django.db.models import Q
+from datetime import timedelta
 
 
 @extend_schema(tags=['Countries'])
@@ -40,8 +41,21 @@ class UserListAPIView(ListAPIView):
         return queryset
 
 
-@extend_schema(tags=['Users'])
-@extend_schema_view(get=extend_schema(summary='СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ'))
+@extend_schema(tags=['Users create'])
+@extend_schema_view(post=extend_schema(summary='ПРОВЕРКА КОДА ПОДТВЕРЖДЕНИЯ ПОЧТЫ'))
+class EmailConfirmationAPIView(APIView):
+    serializer_class = serializers.EmailConfirmationSerializer
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        models.ConfirmationCode.objects.create(email=email)
+        return Response(data='Код подтверждения почты отправлен на почту', status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['Users create'])
+@extend_schema_view(post=extend_schema(summary='СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ'))
 class UserCreateAPIView(CreateAPIView):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserCreateSerializer
@@ -49,6 +63,12 @@ class UserCreateAPIView(CreateAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        
+        if models.ConfirmationCode.objects.filter(email=serializer.validated_data['email'], code=serializer.validated_data['code']).exclude(
+            created_at__gt=timezone.now() - timedelta(minutes=60)).exists():
+            return Response(data='Код подтверждения почты недействителен', status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer.validated_data.pop('code')
         country_id = serializer.validated_data.pop('country_id')
         country = models.Country.objects.get(id=country_id)
         

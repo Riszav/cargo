@@ -3,6 +3,9 @@ from django.contrib.auth.models import AbstractUser
 from .managers import UserManager
 from config.choices import *
 from .utils import generate_client_id
+import random   
+from django.core.mail import send_mail
+from config.settings import DEFAULT_FROM_EMAIL
 
 
 class Country(models.Model):
@@ -16,6 +19,29 @@ class Country(models.Model):
         verbose_name = 'Страна'
         verbose_name_plural = 'Страны'
         ordering = ['is_active',]
+
+
+class ConfirmationCode(models.Model):
+    code = models.CharField('Код', max_length=255, blank=True)
+    email = models.EmailField('Почта', max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        self.code = random.randint(100000, 999999)
+        try:
+            send_mail(
+                subject=f'Код подтверждения почты',
+                message=f'Ваш код подтверждения почты: {self.code}',
+                from_email=DEFAULT_FROM_EMAIL,
+                recipient_list=[self.email]
+            )
+        except Exception as e:
+            raise ValueError(f'Ошибка при отправке кода подтверждения почты: {e}')
+        super().save(*args, **kwargs)
+        
+
+    def __str__(self):
+        return self.code
 
 
 class User(AbstractUser):

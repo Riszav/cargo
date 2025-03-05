@@ -110,7 +110,7 @@ class Package(BaseModel):
                 pass
         
         update_tarif(self)
-        send_message(self)
+        send_message(self, old_instance)
         
         super().save(*args, **kwargs)  
 
