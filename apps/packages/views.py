@@ -18,7 +18,8 @@ from config.choices import *
     OpenApiParameter('client', OpenApiTypes.STR, description='Клиент'),
     OpenApiParameter('recipient', OpenApiTypes.STR, description='Получатель'),
     OpenApiParameter('store', OpenApiTypes.STR, description='Склад'),
-    OpenApiParameter('reys', OpenApiTypes.STR, description='Рейс'),
+    OpenApiParameter('reys_year', OpenApiTypes.STR, description='Рейс год'),
+    OpenApiParameter('reys_number', OpenApiTypes.STR, description='Рейс номер'),
     OpenApiParameter('status', OpenApiTypes.STR, description='Статус'),
     OpenApiParameter('date_from', OpenApiTypes.STR, description='Дата от'),
     OpenApiParameter('date_to', OpenApiTypes.STR, description='Дата до'),
@@ -36,8 +37,10 @@ class PackageListView(ListCreateAPIView):
             queryset = queryset.filter(recipient=self.request.query_params.get('recipient'))
         if self.request.query_params.get('store'):
             queryset = queryset.filter(store=self.request.query_params.get('store'))
-        if self.request.query_params.get('reys'):
-            queryset = queryset.filter(reys=self.request.query_params.get('reys'))
+        if self.request.query_params.get('reys_year'):
+            queryset = queryset.filter(reys__year=self.request.query_params.get('reys_year'))
+        if self.request.query_params.get('reys_number'):
+            queryset = queryset.filter(reys__number=self.request.query_params.get('reys_number'))
         if self.request.query_params.get('warehouse'):
             queryset = queryset.filter(warehouse=self.request.query_params.get('warehouse'))
         if self.request.query_params.get('status'):

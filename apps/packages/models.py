@@ -3,7 +3,7 @@ from apps.users.models import User
 from config.base_model import BaseModel
 from django.utils import timezone
 from config.choices import *
-from apps.packages.utils import update_tarif
+from apps.packages.utils import update_tarif, send_message
 
 
 class WarehouseData(BaseModel):
@@ -110,6 +110,8 @@ class Package(BaseModel):
                 pass
         
         update_tarif(self)
+        send_message(self)
+        
         super().save(*args, **kwargs)  
 
     class Meta:

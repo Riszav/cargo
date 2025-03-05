@@ -10,7 +10,7 @@ def update_tarif(self):
         .values('warehouse')
         .annotate(total_weight=Sum('final_weight'))
     )
-    print(warehouse_weights)
+    # print(warehouse_weights)
 
     VIP_THRESHOLD = 50
 
@@ -39,4 +39,6 @@ def update_tarif(self):
 
     self.client.save()
     
+    
+def send_message(self):
     

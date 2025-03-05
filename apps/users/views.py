@@ -64,10 +64,10 @@ class UserCreateAPIView(CreateAPIView):
         user = models.User.objects.create_user(country=country, **serializer.validated_data)
         password = serializer.validated_data['password']
         user.date_login = timezone.now()
-        
-        client_id = generate_client_id()
-        while models.User.objects.filter(client_id=client_id).exists():
-            client_id = generate_client_id()
+    
+        latest = self.queryset.order_by('-date_joined').first()
+        client_id = generate_client_id(latest)
+    
         user.client_id = client_id
         user.save()
         
