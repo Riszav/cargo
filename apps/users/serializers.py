@@ -45,6 +45,7 @@ class MyRecipientSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     country = CountrySerializer(read_only=True)
     country_id = serializers.IntegerField(write_only=True)
+    client_id = serializers.CharField(read_only=True)
     recipients = RecipientUserSerializer(many=True, required=False)
     class Meta:
         model = models.User
@@ -58,7 +59,7 @@ class UserCreateSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=255)
     phone_number = serializers.CharField(max_length=20)
     email = serializers.EmailField(max_length=255)
-    password = serializers.CharField(max_length=255, write_only=True)
+    password = serializers.CharField(min_length=8, max_length=50, write_only=True)
     country_id = serializers.IntegerField()
     address = serializers.CharField(max_length=255)
     passport_image_1 = serializers.ImageField(required=False)

@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from django.utils import timezone
 from rest_framework import status
 from . import models, serializers
-from .utils import generate_client_id
 from django.db.models import Q
 
 
@@ -64,12 +63,8 @@ class UserCreateAPIView(CreateAPIView):
         user = models.User.objects.create_user(country=country, **serializer.validated_data)
         password = serializer.validated_data['password']
         user.date_login = timezone.now()
-    
-        latest = self.queryset.order_by('-date_joined').first()
-        client_id = generate_client_id(latest)
-    
-        user.client_id = client_id
         user.save()
+        user.set_password(password)
         
         recipient = models.Recipient.objects.create(user=user, country=country, address=address, passport_image_1=passport_image_1, passport_image_2=passport_image_2, 
                                                     inn=inn, passport_number=passport_number, passport_date=passport_date, passport_place=passport_place, main_recipient=True)

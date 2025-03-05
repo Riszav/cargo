@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import UserManager
 from config.choices import *
+from .utils import generate_client_id
 
 
 class Country(models.Model):
@@ -52,6 +53,12 @@ class User(AbstractUser):
             raise ValueError('Пользователь с такой почтой уже существует')
         elif User.objects.filter(phone_number=self.phone_number).exclude(id=self.id).exists():
             raise ValueError('Пользователь с таким номером телефона уже существует')
+        
+        if not self.client_id:
+            latest = User.objects.order_by('-date_joined').first()
+            client_id = generate_client_id(latest, User)
+            self.client_id = client_id
+        
         super().save(*args, **kwargs)
     
     def __str__(self):

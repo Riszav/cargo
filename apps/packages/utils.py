@@ -1,4 +1,5 @@
-
+from django.core.mail import send_mail
+from config.settings.email_data import DEFAULT_FROM_EMAIL
 
 def update_tarif(self):
     from django.db.models import Sum
@@ -41,5 +42,22 @@ def update_tarif(self):
     
     
 def send_message(self):
-    pass
+    if self.status == 'Прибыла':
+        send_mail(
+            f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
+            f'Посылка {self.id} прибыла на склад',
+            DEFAULT_FROM_EMAIL,
+            [self.client.email]
+        )
+    elif self.status == 'Отправлена':
+        send_mail(
+            f'Ваша посылка: "{self.tracking_number}" Отправлена из  "{self.warehouse}"',
+            f'Посылка {self.id} отправлена',
+            DEFAULT_FROM_EMAIL,
+            [self.client.email]
+        )
+    else:
+        pass
+
+
     
