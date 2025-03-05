@@ -41,8 +41,8 @@ def update_tarif(self):
     self.client.save()
     
     
-def send_message(self):
-    if self.status == 'Прибыла' and self.old_status != 'Прибыла':
+def send_message(self, old_instance):
+    if self.status == 'Прибыла' and old_instance.status != 'Прибыла':
         send_mail(
             subject=f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
             message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n'
@@ -62,7 +62,7 @@ def send_message(self):
             from_email=DEFAULT_FROM_EMAIL,
             recipient_list=[self.client.email]
         )
-    elif self.status == 'Отправлена' and self.old_status != 'Отправлена':
+    elif self.status == 'Отправлена' and old_instance.status != 'Отправлена':
         send_mail(
             subject=f'Ваша посылка: "{self.tracking_number}" Отправлена из  "{self.warehouse}"',
             message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n'
