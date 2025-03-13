@@ -75,10 +75,10 @@ class UserCreateAPIView(CreateAPIView):
         address = serializer.validated_data.pop('address')
         passport_image_1 = serializer.validated_data.pop('passport_image_1')
         passport_image_2 = serializer.validated_data.pop('passport_image_2')
-        inn = serializer.validated_data.pop('inn')
-        passport_number = serializer.validated_data.pop('passport_number')
-        passport_date = serializer.validated_data.pop('passport_date')
-        passport_place = serializer.validated_data.pop('passport_place')
+        # inn = serializer.validated_data.pop('inn')
+        # passport_number = serializer.validated_data.pop('passport_number')
+        # passport_date = serializer.validated_data.pop('passport_date')
+        # passport_place = serializer.validated_data.pop('passport_place')
         
         user = models.User.objects.create_user(country=country, **serializer.validated_data)
         password = serializer.validated_data['password']
@@ -86,8 +86,7 @@ class UserCreateAPIView(CreateAPIView):
         user.save()
         user.set_password(password)
         
-        recipient = models.Recipient.objects.create(user=user, country=country, address=address, passport_image_1=passport_image_1, passport_image_2=passport_image_2, 
-                                                    inn=inn, passport_number=passport_number, passport_date=passport_date, passport_place=passport_place, main_recipient=True)
+        recipient = models.Recipient.objects.create(user=user, country=country, address=address, passport_image_1=passport_image_1, passport_image_2=passport_image_2, main_recipient=True)
         
         refresh = RefreshToken.for_user(user)
         refresh.payload.update({

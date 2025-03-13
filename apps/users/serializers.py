@@ -67,12 +67,12 @@ class UserCreateSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, max_length=50, write_only=True)
     country_id = serializers.IntegerField()
     address = serializers.CharField(max_length=255)
-    passport_image_1 = serializers.ImageField(required=False)
-    passport_image_2 = serializers.ImageField(required=False)
-    inn = serializers.CharField()
-    passport_number = serializers.CharField()
-    passport_date = serializers.DateField()
-    passport_place = serializers.CharField()
+    passport_image_1 = serializers.ImageField()
+    passport_image_2 = serializers.ImageField()
+    # inn = serializers.CharField()
+    # passport_number = serializers.CharField()
+    # passport_date = serializers.DateField()
+    # passport_place = serializers.CharField()
 
 
 class UserClientSerializer(serializers.ModelSerializer):

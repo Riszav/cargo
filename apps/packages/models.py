@@ -154,6 +154,7 @@ class Product(BaseModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория', related_name='products')
     name = models.CharField('Название', max_length=255, blank=True)
     code = models.CharField('Код', max_length=255, blank=True)
+    brutto = models.FloatField('Брутто', blank=True, null=True)
     
     def __str__(self):
         return self.name
