@@ -14,12 +14,12 @@ class WarehouseData(BaseModel):
     usa_zip_code = models.CharField('Почтовый индекс', max_length=10, blank=True)
     usa_phone = models.CharField('Номер телефона', max_length=20, blank=True)
     
-    turkey_city = models.CharField('Город', max_length=255, blank=True)
-    turkey_rayon = models.CharField('Район', max_length=255, blank=True)
-    turkey_quarter = models.CharField('Квартал', max_length=255, blank=True)
-    turkey_address = models.CharField('Адрес', max_length=255, blank=True)
-    turkey_post_code = models.CharField('Почтовый индекс', max_length=10, blank=True)
-    turkey_phone = models.CharField('Номер телефона', max_length=20, blank=True)
+    # turkey_city = models.CharField('Город', max_length=255, blank=True)
+    # turkey_rayon = models.CharField('Район', max_length=255, blank=True)
+    # turkey_quarter = models.CharField('Квартал', max_length=255, blank=True)
+    # turkey_address = models.CharField('Адрес', max_length=255, blank=True)
+    # turkey_post_code = models.CharField('Почтовый индекс', max_length=10, blank=True)
+    # turkey_phone = models.CharField('Номер телефона', max_length=20, blank=True)
     
     china_address = models.CharField('Адрес', max_length=255, blank=True)
     china_phone = models.CharField('Номер телефона', max_length=20, blank=True)
@@ -27,10 +27,10 @@ class WarehouseData(BaseModel):
     china_detail_address = models.CharField('Детальный адрес', max_length=255, blank=True)
     china_post_code = models.CharField('Почтовый индекс', max_length=10, blank=True)
     
-    japan_city = models.CharField('Город', max_length=255, blank=True)
-    japan_address = models.CharField('Адрес', max_length=255, blank=True)
-    japan_post_code = models.CharField('Почтовый индекс', max_length=10, blank=True)
-    japan_phone = models.CharField('Номер телефона', max_length=20, blank=True)
+    # japan_city = models.CharField('Город', max_length=255, blank=True)
+    # japan_address = models.CharField('Адрес', max_length=255, blank=True)
+    # japan_post_code = models.CharField('Почтовый индекс', max_length=10, blank=True)
+    # japan_phone = models.CharField('Номер телефона', max_length=20, blank=True)
     
     def __str__(self):
         return 'Данные складов'

@@ -32,8 +32,8 @@ class UserAdmin(BaseUserAdmin):
             "Персональная информация", 
             {"fields": 
                 ("client_id", ("last_name", "first_name"), "country", 
-                ("tarif_usa", "tarif_usa_value"), 'tarif_usa_weight', ("tarif_turkey", "tarif_turkey_value"), 'tarif_turkey_weight', 
-                ("tarif_china", "tarif_china_value"), 'tarif_china_weight', ("tarif_japan", "tarif_japan_value"), 'tarif_japan_weight', 
+                ("tarif_usa", "tarif_usa_value"), 'tarif_usa_weight',
+                ("tarif_china", "tarif_china_value"), 'tarif_china_weight', 
                 'is_admin', 'is_manager'
                 )
             }

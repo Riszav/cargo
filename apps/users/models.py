@@ -45,7 +45,7 @@ class ConfirmationCode(models.Model):
 
 
 class User(AbstractUser):
-    client_id = models.CharField('ID клиента', max_length=255, blank=True)
+    client_id = models.CharField('ID клиента', max_length=255, blank=True, unique=True)
     last_name = models.CharField('Фамилия', max_length=255, blank=True)
     first_name = models.CharField('Имя', max_length=255, blank=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name='Страна', blank=True, null=True)
@@ -55,15 +55,15 @@ class User(AbstractUser):
     tarif_usa = models.CharField('Тариф США', max_length=255, blank=True, choices=STATUS_TARIF, default='Новичок')
     tarif_usa_value = models.FloatField('', blank=True, null=True, default=11)
     tarif_usa_weight = models.FloatField('Тариф США: Вес', blank=True, null=True, default=0)
-    tarif_turkey = models.CharField('Тариф Турция', max_length=255, blank=True, choices=STATUS_TARIF, default='Новичок')
-    tarif_turkey_value = models.FloatField('', blank=True, null=True, default=5.44)
-    tarif_turkey_weight = models.FloatField('Тариф Турция: Вес', blank=True, null=True, default=0)
+    # tarif_turkey = models.CharField('Тариф Турция', max_length=255, blank=True, choices=STATUS_TARIF, default='Новичок')
+    # tarif_turkey_value = models.FloatField('', blank=True, null=True, default=5.44)
+    # tarif_turkey_weight = models.FloatField('Тариф Турция: Вес', blank=True, null=True, default=0)
     tarif_china = models.CharField('Тариф Китай', max_length=255, blank=True, choices=STATUS_TARIF, default='Новичок')
     tarif_china_value = models.FloatField('', blank=True, null=True, default=3.40)
     tarif_china_weight = models.FloatField('Тариф Китай: Вес', blank=True, null=True, default=0)
-    tarif_japan = models.CharField('Тариф Япония', max_length=255, blank=True, choices=STATUS_TARIF, default='Новичок')
-    tarif_japan_value = models.FloatField('', blank=True, null=True, default=20)
-    tarif_japan_weight = models.FloatField('Тариф Япония: Вес', blank=True, null=True, default=0)
+    # tarif_japan = models.CharField('Тариф Япония', max_length=255, blank=True, choices=STATUS_TARIF, default='Новичок')
+    # tarif_japan_value = models.FloatField('', blank=True, null=True, default=20)
+    # tarif_japan_weight = models.FloatField('Тариф Япония: Вес', blank=True, null=True, default=0)
     
     is_admin = models.BooleanField('Админ', default=False)  
     is_manager = models.BooleanField('Менеджер', default=False)

@@ -368,6 +368,13 @@ class WarehouseDataView(ListAPIView):
     queryset = models.WarehouseData.objects.all()
     serializer_class = serializers.WarehouseDataSerializer
     permission_classes = [IsAuthenticated]
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        for item in serializer.data:
+            item['usa_address_2'] = f'{item["usa_address_2"]}-{request.user.client_id}'
+        return Response(serializer.data)
 
 
 @extend_schema(tags=['Choices'])

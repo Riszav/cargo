@@ -9,15 +9,15 @@ class WarehouseDataAdmin(BaseSoloAdmin):
         ('США', {
             'fields': ['usa_address_1', 'usa_address_2', 'usa_city', 'usa_state', 'usa_zip_code', 'usa_phone'],
         }), 
-        ('Турция', {
-            'fields': ['turkey_city', 'turkey_rayon', 'turkey_quarter', 'turkey_address', 'turkey_post_code', 'turkey_phone'],
-        }),
+        # ('Турция', {
+        #     'fields': ['turkey_city', 'turkey_rayon', 'turkey_quarter', 'turkey_address', 'turkey_post_code', 'turkey_phone'],
+        # }),
         ('Китай', {
             'fields': ['china_address', 'china_phone', 'china_region', 'china_detail_address', 'china_post_code'],
         }),
-        ('Япония', {
-            'fields': ['japan_city', 'japan_address', 'japan_post_code', 'japan_phone']
-        })
+        # ('Япония', {
+        #     'fields': ['japan_city', 'japan_address', 'japan_post_code', 'japan_phone']
+        # })
     ]
     
 
