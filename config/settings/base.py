@@ -77,6 +77,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+AUTH_USER_MODEL = 'users.User'
+
 AUTHENTICATION_BACKENDS = [
     'config.authentication.PhoneOrEmailBackend',
     'django.contrib.auth.backends.ModelBackend',

@@ -22,9 +22,8 @@ class UserAdmin(BaseUserAdmin):
     list_display_links = ('id', 'is_admin', 'is_manager', 'email', 'phone_number', 'last_name', 'first_name', 'client_id')
     search_fields = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
     list_filter = ('email', 'phone_number', 'last_name', 'first_name', 'client_id')
-    ordering = ('-date_joined',)
+    ordering = ('-id',)
     inlines = [RecipientInline]
-    readonly_fields = ('client_id',)
     # add_form = UserCreationForm
     
     fieldsets = (

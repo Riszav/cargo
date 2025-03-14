@@ -32,7 +32,7 @@ def increment_letters(letters):
     return letter1 + letter2
 
 def generate_client_id(latest, model):
-    if latest.client_id:
+    if latest:
         client_id = increment_client_id(latest.client_id)
         while model.objects.filter(client_id=client_id).exists():
             client_id = increment_client_id(client_id)
