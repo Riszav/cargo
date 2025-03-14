@@ -372,9 +372,24 @@ class WarehouseDataView(ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        for item in serializer.data:
-            item['usa_address_2'] = f'{item["usa_address_2"]}-{request.user.client_id}'
-        return Response(serializer.data)
+        return Response([{
+            'id': item['id'],
+            'usa': {
+                'usa_address_1': item['usa_address_1'],
+                'usa_address_2': f'{item["usa_address_2"]}-{request.user.client_id}',
+                'usa_city': item['usa_city'],
+                'usa_state': item['usa_state'],
+                'usa_zip_code': item['usa_zip_code'],
+                'usa_phone': item['usa_phone'],
+            },
+            'china': {
+                'china_address': f'{item["china_address"]}-{request.user.client_id}',
+                'china_phone': item['china_phone'],
+                'china_region': item['china_region'],
+                'china_detail_address': item['china_detail_address'],
+                'china_post_code': item['china_post_code'],
+            },
+        } for item in serializer.data])
 
 
 @extend_schema(tags=['Choices'])
