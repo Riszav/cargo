@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.http import HttpRequest
 from . import models
 
 
@@ -41,4 +42,9 @@ class UserAdmin(BaseUserAdmin):
         ("Права",{"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
         ("Важные даты", {"fields": ("last_login", "date_joined")}),
     )
+    
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.is_admin:
+            return False
+        return True
 
