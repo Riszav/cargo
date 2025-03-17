@@ -321,7 +321,6 @@ class UserClientForgotPasswordConfirmAPIView(APIView):
 @extend_schema(tags=['Users Utils'])
 @extend_schema_view(post=extend_schema(summary='СМЕНА ПАРОЛЯ ПОЛЬЗОВАТЕЛЯ'))
 class UserClientForgotPasswordSetAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     serializer_class = serializers.EmailConfirmationSetSerializer
     
     def post(self, request):
