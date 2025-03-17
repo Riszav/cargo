@@ -99,6 +99,7 @@ class Package(BaseModel):
     
     def save(self, *args, **kwargs):
         old_instance = None
+        old_status = None
         
         if self.pk:
             old_instance = self.__class__.objects.filter(pk=self.pk).first()
@@ -111,7 +112,7 @@ class Package(BaseModel):
         if self.final_weight:
             update_tarif(self)
 
-        send_message(self, old_instance)
+        send_message(self, old_status)
         
         super().save(*args, **kwargs)  
 
