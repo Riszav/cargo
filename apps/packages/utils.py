@@ -37,8 +37,8 @@ def update_tarif(self):
     self.client.save()
     
     
-def send_message(self):
-    if self.status == 'Прибыла' and self.instance.status != 'Прибыла' and self.warehouse == 'США':
+def send_message(self, old_instance):
+    if self.status == 'Прибыла' and old_instance.status != 'Прибыла' and self.warehouse == 'США':
         send_mail(
             subject=f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
             message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n\n'
@@ -58,7 +58,7 @@ def send_message(self):
             from_email=DEFAULT_FROM_EMAIL,
             recipient_list=[self.client.email]
         )
-    elif self.status == 'Прибыла' and self.instance.status != 'Прибыла':
+    elif self.status == 'Прибыла' and old_instance.status != 'Прибыла':
         send_mail(
             subject=f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
             message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n\n'
@@ -72,7 +72,7 @@ def send_message(self):
             from_email=DEFAULT_FROM_EMAIL,
             recipient_list=[self.client.email]
         )
-    elif self.status == 'Отправлена' and self.instance.status != 'Отправлена':
+    elif self.status == 'Отправлена' and old_instance.status != 'Отправлена':
         send_mail(
             subject=f'Ваша посылка: "{self.tracking_number}" Отправлена из  "{self.warehouse}"',
             message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n\n'
@@ -95,5 +95,5 @@ def send_package_to_home(self):
                 f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n\n'
                 f'Ссылка на посылку: https://easyexpress.kg/cabinet/packages/{self.id}\n\n',
         from_email=DEFAULT_FROM_EMAIL,
-        recipient_list=['admin@easyexpress.kg']
+        recipient_list=['riszav.01@gmail.com']
     )

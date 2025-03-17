@@ -101,7 +101,7 @@ class Package(BaseModel):
         
         if self.pk:
             try:
-                # old_instance = self.__class__.objects.get(pk=self.pk)
+                old_instance = self.__class__.objects.get(pk=self.pk)
                 if self.status == 'На складе' and self.instance.status != 'На складе':
                     self.date_on_warehouse = timezone.now()
             except self.__class__.DoesNotExist:
@@ -110,7 +110,7 @@ class Package(BaseModel):
             update_tarif(self)
         
         # if old_instance:
-        send_message(self)
+        send_message(self, old_instance)
         
         super().save(*args, **kwargs)  
 
