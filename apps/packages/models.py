@@ -98,18 +98,19 @@ class Package(BaseModel):
         return f'{self.client} - {self.recipient}'
     
     def save(self, *args, **kwargs):
+        old_instance = None
         
         if self.pk:
-            try:
-                old_instance = self.__class__.objects.get(pk=self.pk)
-                if self.status == 'На складе' and self.instance.status != 'На складе':
-                    self.date_on_warehouse = timezone.now()
-            except self.__class__.DoesNotExist:
-                pass
+            old_instance = self.__class__.objects.filter(pk=self.pk).first()
+            
+        if old_instance:
+            old_status = getattr(old_instance, "status", None)
+            if self.status == "На складе" and old_status != "На складе":
+                self.date_on_warehouse = timezone.now()
+
         if self.final_weight:
             update_tarif(self)
-        
-        # if old_instance:
+
         send_message(self, old_instance)
         
         super().save(*args, **kwargs)  
