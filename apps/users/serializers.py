@@ -61,7 +61,7 @@ class EmailConfirmationConfirmSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
     code = serializers.CharField(max_length=6)
     
-class UserClientChangePasswordSerializer(serializers.Serializer):
+class EmailConfirmationSetSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
     code = serializers.CharField(max_length=6)
     password = serializers.CharField(min_length=8, max_length=50, write_only=True)

@@ -106,8 +106,8 @@ class Package(BaseModel):
                     self.date_on_warehouse = timezone.now()
             except self.__class__.DoesNotExist:
                 pass
-        
-        update_tarif(self)
+        if self.final_weight:
+            update_tarif(self)
         
         # if old_instance:
         send_message(self)

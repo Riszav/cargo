@@ -25,18 +25,14 @@ def update_tarif(self):
             self.client.tarif_usa_weight = total_weight
             if total_weight >= VIP_THRESHOLD:
                 self.client.tarif_usa = 'VIP'
-        elif warehouse == 'Турция':
-            self.client.tarif_turkey_weight = total_weight
-            if total_weight >= VIP_THRESHOLD:
-                self.client.tarif_turkey = 'VIP'
+            else:
+                self.client.tarif_usa = 'Новичок'
         elif warehouse == 'Китай':
             self.client.tarif_china_weight = total_weight
             if total_weight >= VIP_THRESHOLD:
                 self.client.tarif_china = 'VIP'
-        elif warehouse == 'Япония':
-            self.client.tarif_japan_weight = total_weight
-            if total_weight >= VIP_THRESHOLD:
-                self.client.tarif_japan = 'VIP'
+            else:
+                self.client.tarif_china = 'Новичок'
 
     self.client.save()
     
