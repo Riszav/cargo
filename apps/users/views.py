@@ -50,6 +50,8 @@ class EmailConfirmationAPIView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
+        if models.User.objects.filter(email=email).exists():
+            return Response(data='Пользователь с такой почтой уже существует', status=status.HTTP_400_BAD_REQUEST)
         models.ConfirmationCode.objects.create(email=email)
         return Response(data='Код подтверждения почты отправлен на почту', status=status.HTTP_200_OK)
 
@@ -288,6 +290,59 @@ class UserClientChangePasswordAPIView(APIView):
         return Response(data='Пароль успешно изменен', status=status.HTTP_200_OK)
     
 
+@extend_schema(tags=['Users Utils'])
+@extend_schema_view(post=extend_schema(summary='ЗАБЫЛИ ПАРОЛЬ (ПОДТВЕРДИТЬ ПОЧТУ)'))
+class UserClientForgotPasswordAPIView(APIView):
+    serializer_class = serializers.EmailConfirmationSerializer
+   
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        models.ConfirmationCode.objects.create(email=email)
+        return Response(data='Код подтверждения почты отправлен на почту', status=status.HTTP_200_OK)
+    
+
+@extend_schema(tags=['Users Utils'])
+@extend_schema_view(post=extend_schema(summary='ЗАБЫЛИ ПАРОЛЬ (ПОДТВЕРДИТЬ КОД)'))
+class UserClientForgotPasswordConfirmAPIView(APIView):
+    serializer_class = serializers.EmailConfirmationConfirmSerializer
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        code = serializer.validated_data['code']
+        if not models.ConfirmationCode.objects.filter(email=email, code=code).exists():
+            return Response(data='Неверный код', status=status.HTTP_400_BAD_REQUEST)
+        return Response(data='Код подтвержден', status=status.HTTP_200_OK)
+        
+    
+@extend_schema(tags=['Users Utils'])
+@extend_schema_view(post=extend_schema(summary='СМЕНА ПАРОЛЯ ПОЛЬЗОВАТЕЛЯ'))
+class UserClientForgotPasswordSetAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.UserClientChangePasswordSerializer
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        code = serializer.validated_data['code']
+        password = serializer.validated_data['password']
+        confirm_password = serializer.validated_data['confirm_password']
+        if not models.ConfirmationCode.objects.filter(email=email, code=code).exists():
+            return Response(data='Неверный код', status=status.HTTP_400_BAD_REQUEST)
+        if password != confirm_password:
+            return Response(data='Пароли не совпадают', status=status.HTTP_400_BAD_REQUEST)
+        user = models.User.objects.get(email=email)
+        user.set_password(password)
+        user.save()
+        return Response(data='Пароль успешно изменен', status=status.HTTP_200_OK)
+    
+    
+    
+    
 @extend_schema(tags=['Auth'])
 @extend_schema_view(post=extend_schema(summary='ВХОД В СИСТЕМУ'))
 class UserLoginAPIView(APIView):

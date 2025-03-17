@@ -189,7 +189,9 @@ class PaymentData(models.Model):
 
 class News(models.Model):
     title = models.CharField('Заголовок', max_length=255)
-    description = CKEditor5Field('Описание', blank=True, null=True, config_name='external')
+    description = CKEditor5Field('Описание', blank=True, null=True)
+    image = models.ImageField('Изображение', upload_to='news/', blank=True, null=True)
+    date = models.DateTimeField('Дата', auto_now_add=True)
     
     def __str__(self):
         return self.title
@@ -213,4 +215,3 @@ class PVZ(models.Model):
         verbose_name = 'ПВЗ'
         verbose_name_plural = 'ПВЗ'
         ordering = ['id']
-

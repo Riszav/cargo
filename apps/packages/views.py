@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -11,6 +11,7 @@ from . import models, serializers
 from apps.users import models as users_models
 from apps.users import serializers as users_serializers
 from config.choices import *
+from .utils import send_package_to_home
 
 
 @extend_schema(tags=['Посылки'])
@@ -223,6 +224,23 @@ class MyPackageDetailView(RetrieveUpdateDestroyAPIView):
                 models.PackageDetail.objects.update_or_create(package=package, **detail)
         
         return serializer.save()
+    
+
+@extend_schema(tags=['Посылки мои'])
+class MyPackageSendDataView(RetrieveAPIView):
+    serializer_class = serializers.PackageCreateSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+    
+    def get_queryset(self):
+        queryset = models.Package.objects.filter(client=self.request.user)
+        return queryset
+    
+    def get(self, request, *args, **kwargs):
+        package = self.get_object()
+        send_package_to_home()
+        return Response(status=status.HTTP_200_OK)
+
 
 @extend_schema(tags=['Посылки мои'])
 class StatusCountView(ListAPIView):

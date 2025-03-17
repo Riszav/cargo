@@ -56,6 +56,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 class EmailConfirmationSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
+    
+class EmailConfirmationConfirmSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255)
+    code = serializers.CharField(max_length=6)
+    
+class UserClientChangePasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255)
+    code = serializers.CharField(max_length=6)
+    password = serializers.CharField(min_length=8, max_length=50, write_only=True)
+    confirm_password = serializers.CharField(min_length=8, max_length=50, write_only=True)
 
 
 class UserCreateSerializer(serializers.Serializer):
@@ -98,9 +108,9 @@ class UserClientSerializer(serializers.ModelSerializer):
                   'tarif_usa', 'tarif_usa_value', 'tarif_usa_weight', 'tarif_china', 'tarif_china_value', 'tarif_china_weight',]
 
 class UserClientChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField()
-    new_password = serializers.CharField()
-    confirm_password = serializers.CharField()
+    old_password = serializers.CharField(min_length=8, max_length=50, write_only=True)
+    new_password = serializers.CharField(min_length=8, max_length=50, write_only=True)
+    confirm_password = serializers.CharField(min_length=8, max_length=50, write_only=True)
 
 
 class UserLoginSerializer(serializers.Serializer):

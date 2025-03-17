@@ -16,7 +16,11 @@ urlpatterns = [
     path('profile/recipient/', views.ProfileRecipientAPIView.as_view(), name='user-client-recipient'),
     path('profile/recipient/<int:pk>/', views.ProfileRecipientDetailAPIView.as_view(), name='user-client-recipient-detail'),
     path('profile/recipient/<int:pk>/make-main/', views.ProfileRecipientMainAPIView.as_view(), name='user-client-recipient-main'),
+    
     path('users/client/change-password/', views.UserClientChangePasswordAPIView.as_view(), name='user-client-change-password'),
+    path('users/client/forgot-password/', views.UserClientForgotPasswordAPIView.as_view(), name='user-client-forgot-password'),
+    path('users/client/forgot-password/confirm/', views.UserClientForgotPasswordConfirmAPIView.as_view(), name='user-client-forgot-password-confirm'),  
+    path('users/client/forgot-password/set/', views.UserClientForgotPasswordSetAPIView.as_view(), name='user-client-forgot-password-set'),
     
     path('login/', views.UserLoginAPIView.as_view(), name='user-login'),
     path('refresh/', views.UserRefreshAPIView.as_view(), name='user-refresh'),

@@ -92,4 +92,12 @@ def send_message(self):
         pass
 
 
-    
+def send_package_to_home(self):
+    send_mail(
+        subject=f'Заявка на отправку посылки на дом [Посылка: {self.tracking_number}]',
+        message=f'Клиент: {self.client.first_name} {self.client.last_name}\n\n'
+                f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n\n'
+                f'Ссылка на посылку: https://easyexpress.kg/cabinet/packages/{self.id}\n\n',
+        from_email=DEFAULT_FROM_EMAIL,
+        recipient_list=['admin@easyexpress.kg']
+    )
