@@ -67,9 +67,17 @@ class UserCreateAPIView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        if not models.ConfirmationCode.objects.filter(email=serializer.validated_data['email'], code=serializer.validated_data['code']).exclude(
-            created_at__gt=timezone.now() - timedelta(minutes=60)).exists():
-            return Response(data='Код подтверждения почты недействителен', status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            confirmation_code = models.ConfirmationCode.objects.get(email=serializer.validated_data['email'], code=serializer.validated_data['code'])
+        except models.ConfirmationCode.DoesNotExist:
+            return Response({'error': 'Код подтверждения неверный'}, status=status.HTTP_400_BAD_REQUEST)
+        if confirmation_code.created_at < timezone.now() - timedelta(days=3):
+            return Response({'error': 'Код подтверждения просрочен'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # if not models.ConfirmationCode.objects.filter(email=serializer.validated_data['email'], code=serializer.validated_data['code']).exclude(
+        #     created_at__gt=timezone.now() - timedelta(minutes=60)).exists():
+        #     return Response(data='Код подтверждения почты недействителен', status=status.HTTP_400_BAD_REQUEST)
         
         serializer.validated_data.pop('code')
         country_id = serializer.validated_data.pop('country_id')
