@@ -52,6 +52,7 @@ class EmailConfirmationAPIView(APIView):
         email = serializer.validated_data['email']
         if models.User.objects.filter(email=email).exists():
             return Response(data='Пользователь с такой почтой уже существует', status=status.HTTP_400_BAD_REQUEST)
+        models.ConfirmationCode.objects.filter(email=email).delete()
         models.ConfirmationCode.objects.create(email=email)
         return Response(data='Код подтверждения почты отправлен на почту', status=status.HTTP_200_OK)
 
@@ -66,7 +67,7 @@ class UserCreateAPIView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        if models.ConfirmationCode.objects.filter(email=serializer.validated_data['email'], code=serializer.validated_data['code']).exclude(
+        if not models.ConfirmationCode.objects.filter(email=serializer.validated_data['email'], code=serializer.validated_data['code']).exclude(
             created_at__gt=timezone.now() - timedelta(minutes=60)).exists():
             return Response(data='Код подтверждения почты недействителен', status=status.HTTP_400_BAD_REQUEST)
         

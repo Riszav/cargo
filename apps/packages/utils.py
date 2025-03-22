@@ -58,6 +58,7 @@ def send_message(self, old_status):
             from_email=DEFAULT_FROM_EMAIL,
             recipient_list=[self.client.email]
         )
+        # ул. Юсупа Абдрахманова, 204, ТЦ «Тюльпан», 1 этаж офис NQ2, напротив отеля Hyatt Regency (вход с ул. Юсупа Абдрахманова)
     elif self.status == 'Прибыла' and old_status != 'Прибыла':
         send_mail(
             subject=f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
