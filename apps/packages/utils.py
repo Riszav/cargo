@@ -52,7 +52,7 @@ def send_message(self, old_status):
                     f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n\n'
                     f'Вес посылки: {self.final_weight} кг. , стоимость доставки составляет: {self.delivery_cost} USD\n\n'
                     f'Комментарий: {self.system_comment}\n\n'
-                    f'Забрать посылку можно в нашем офисе по адресу: ул. Юсупа Абдрахманова, 204, ТЦ «Тюльпан», 1 этаж офис NQ2, напротив отеля Hyatt Regency (вход с ул. Юсупа Абдрахманова).\n\n\n\n'
+                    f'Забрать посылку можно в нашем офисе по адресу: ул. Киевская 107 1-этаж ориентир ТЦ Караван.\n\n\n\n'
                     f'С Уважением,\n'
                     f'MOI CARGO',
             from_email=DEFAULT_FROM_EMAIL,
@@ -67,7 +67,7 @@ def send_message(self, old_status):
                     f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n\n'
                     f'Вес посылки: {self.final_weight} кг. , стоимость доставки составляет: {self.delivery_cost} USD\n\n'
                     f'Комментарий: {self.system_comment}\n\n'
-                    f'Забрать посылку можно в нашем офисе по адресу: ул. Юсупа Абдрахманова, 204, ТЦ «Тюльпан», 1 этаж офис NQ2, напротив отеля Hyatt Regency (вход с ул. Юсупа Абдрахманова).\n\n\n\n'
+                    f'Забрать посылку можно в нашем офисе по адресу: ул. Киевская 107 1-этаж ориентир ТЦ Караван.\n\n\n\n'
                     f'С Уважением,\n'
                     f'MOI CARGO',
             from_email=DEFAULT_FROM_EMAIL,
