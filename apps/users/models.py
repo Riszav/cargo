@@ -138,3 +138,30 @@ class Recipient(models.Model):
         verbose_name = 'Получатель'
         verbose_name_plural = 'Получатели'
         ordering = ['-created_at']
+
+
+class Mailing(models.Model):
+    title = models.CharField('Заголовок', max_length=255, blank=True)
+    message = models.TextField('Сообщение')
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        verbose_name = 'Рассылка'
+        verbose_name_plural = 'Рассылки'
+        ordering = ['-created_at']
+        
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        users = User.objects.all()
+        try:
+            send_mail(
+                subject=f'{self.title}',
+                message=self.message,
+                from_email=DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email for user in users]
+            )
+        except Exception as e:
+            raise ValueError(f'Ошибка при отправке рассылки: {e}')

@@ -48,3 +48,8 @@ class UserAdmin(BaseUserAdmin):
             return False
         return True
 
+@admin.register(models.Mailing)
+class MailingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'created_at')
+    search_fields = ('title', 'created_at')
+    list_filter = ('title', 'created_at')
