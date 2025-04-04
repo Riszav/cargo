@@ -6,6 +6,7 @@ from .utils import generate_client_id
 import random   
 from django.core.mail import send_mail
 from config.settings import DEFAULT_FROM_EMAIL
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class Country(models.Model):
@@ -142,7 +143,7 @@ class Recipient(models.Model):
 
 class Mailing(models.Model):
     title = models.CharField('Заголовок', max_length=255, blank=True)
-    message = models.TextField('Сообщение')
+    message = CKEditor5Field('Сообщение', blank=True)
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     
     def __str__(self):
@@ -161,7 +162,9 @@ class Mailing(models.Model):
                 subject=f'{self.title}',
                 message=self.message,
                 from_email=DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email for user in users]
+                recipient_list=[user.email for user in users],
+                html_message=self.message,
+                fail_silently=False
             )
         except Exception as e:
             raise ValueError(f'Ошибка при отправке рассылки: {e}')
