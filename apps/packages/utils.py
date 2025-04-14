@@ -38,28 +38,8 @@ def update_tarif(self):
     
     
 def send_message(self, old_status):
-    if self.status == 'Прибыла' and old_status != 'Прибыла' and self.warehouse == 'США':
-        send_mail(
-            subject=f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
-            message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n\n'
-                    f'Мы рады сообщить, что наш склад в "{self.warehouse}" переезжает на новый адрес. это позволит нам улучшить качество обслуживания и обработку ваших отправлений.\n\n'
-                    f'Важно: Старый склад будет работать только до 1 апреля. После этой даты мы не сможем гарантировать получение и обработку посылок, отправленных на старый адрес.\n\n'
-                    f'Пожалуйста, обязательно обновите адрес в своих заказах, чтобы избежать возможных проблем с доставкой!\n\n'
-                    f'Актуальные адреса склада уже доступны в вашем личном кабинете: https://easyexpress.kg/cabinet\n\n'
-                    f'Пожалуйста, проверьте и используйте новый адрес при оформлении заказов!\n\n'
-                    f'Спасибо, что выбираете Easy Express!\n\n'
-                    f'Статус Вашей посылки был изменен на Прибыла в Бишкек из “{self.warehouse}”.\n\n'
-                    f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n\n'
-                    f'Вес посылки: {self.final_weight} кг. , стоимость доставки составляет: {self.delivery_cost} USD\n\n'
-                    f'Комментарий: {self.system_comment}\n\n'
-                    f'Забрать посылку можно в нашем офисе по адресу: ул. Киевская 107 1-этаж ориентир ТЦ Караван.\n\n\n\n'
-                    f'С Уважением,\n'
-                    f'MOI CARGO',
-            from_email=DEFAULT_FROM_EMAIL,
-            recipient_list=[self.client.email]
-        )
         # ул. Юсупа Абдрахманова, 204, ТЦ «Тюльпан», 1 этаж офис NQ2, напротив отеля Hyatt Regency (вход с ул. Юсупа Абдрахманова)
-    elif self.status == 'Прибыла' and old_status != 'Прибыла':
+    if self.status == 'Прибыла' and old_status != 'Прибыла':
         send_mail(
             subject=f'Ваша посылка: "{self.tracking_number}" Прибыла в Бишкек из "{self.warehouse}"',
             message=f'Уважаемый(ая), {self.client.first_name} {self.client.last_name}\n\n'
@@ -94,7 +74,7 @@ def send_package_to_home(self):
         subject=f'Заявка на отправку посылки на дом [Посылка: {self.tracking_number}]',
         message=f'Клиент: {self.client.first_name} {self.client.last_name}\n\n'
                 f'Номер заказа "{self.id}", трек-номер заказа "{self.tracking_number}"\n\n'
-                f'Ссылка на посылку: https://easyexpress.kg/cabinet/packages/{self.id}\n\n',
+                f'Ссылка на посылку: https://moicargo.kg/dashboard/edit-parcel/{self.id}\n\n',
         from_email=DEFAULT_FROM_EMAIL,
         recipient_list=['riszav.01@gmail.com']
     )

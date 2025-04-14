@@ -26,6 +26,7 @@ from .utils import send_package_to_home
     OpenApiParameter('date_to', OpenApiTypes.STR, description='Дата до'),
     OpenApiParameter('date_on_warehouse_from', OpenApiTypes.STR, description='Дата на складе от'),
     OpenApiParameter('date_on_warehouse_to', OpenApiTypes.STR, description='Дата на складе до'),
+    OpenApiParameter('tracking_number', OpenApiTypes.STR, description='Поиск по трек-номеру')
 ])
 class PackageListView(ListCreateAPIView):
     permission_classes = [IsAdminOrManager]
@@ -54,6 +55,9 @@ class PackageListView(ListCreateAPIView):
             queryset = queryset.filter(date_on_warehouse__gte=self.request.query_params.get('date_on_warehouse_from'))
         if self.request.query_params.get('date_on_warehouse_to'):
             queryset = queryset.filter(date_on_warehouse__lte=self.request.query_params.get('date_on_warehouse_to'))
+        tracking_number = self.request.query_params.get('tracking_number')
+        if tracking_number:
+            queryset = queryset.filter(tracking_number__icontains=tracking_number)
         return queryset
         #         query &= (Q(client__last_name__icontains=term) | Q(client__first_name__icontains=term))
         #     queryset = queryset.filter(query)
