@@ -85,10 +85,10 @@ class Package(BaseModel):
     final_weight = models.FloatField('Итоговый вес', blank=True, null=True)
     delivery_cost = models.DecimalField('Стоимость доставки', blank=True, null=True, decimal_places=2, max_digits=10)
 
-    system_comment = models.TextField('Системный комментарий', blank=True)
-    client_comment = models.TextField('Комментарий клиента', blank=True)
-    cladovshik_comment = models.TextField('Комментарий кладовщика', blank=True)
-    manager_comment = models.TextField('Комментарий менеджера', blank=True)
+    system_comment = models.TextField('Системный комментарий', blank=True, null=True)
+    client_comment = models.TextField('Комментарий клиента', blank=True, null=True)
+    cladovshik_comment = models.TextField('Комментарий кладовщика', blank=True, null=True)
+    manager_comment = models.TextField('Комментарий менеджера', blank=True, null=True)
     
     whole_summa = models.DecimalField('Сумма', blank=True, null=True, decimal_places=2, max_digits=10)
     whole_summa_eur = models.DecimalField('Сумма в евро', blank=True, null=True, decimal_places=2, max_digits=10)

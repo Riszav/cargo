@@ -117,7 +117,7 @@ class PackageCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Package
         fields = ['id', 'status', 'reys', 'warehouse', 'tracking_number', 'store', 'type_of_packaging', 'recipient', 'package_details', 
-                  'package_image', 'label_image', 'invoice_image']
+                  'package_image', 'label_image', 'invoice_image', 'client_comment',]
         
     # def get_recipient(self, obj):
     #     request = self.context.get('request')
