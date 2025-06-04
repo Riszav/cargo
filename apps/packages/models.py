@@ -97,6 +97,10 @@ class Package(BaseModel):
     def __str__(self):
         return f'{self.client} - {self.recipient}'
     
+    def clean(self):
+        if self.tracking_number and self.__class__.objects.filter(tracking_number=self.tracking_number).exclude(pk=self.id).exists():
+            raise ValueError('Трек номер уже существует')
+    
     def save(self, *args, **kwargs):
         old_instance = None
         old_status = None
