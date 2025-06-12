@@ -137,7 +137,7 @@ class PackageAdminCreateSerializer(serializers.ModelSerializer):
         model = models.Package
         fields = ['id', 'client', 'recipient', 'status', 'warehouse', 'package_image', 'label_image', 'invoice_image', 'type_of_packaging', 'options_of_packaging',
                   'store', 'reys', 'full_name', 'weight_of_package', 'tracking_number', 'count_scans', 'final_weight', 'delivery_cost',
-                  'client_comment', 'system_comment', 'package_details', 'package_images', 'package_weights']
+                  'system_comment', 'client_comment', 'cladovshik_comment', 'manager_comment', 'package_details', 'package_images', 'package_weights']
         
         
 class PackageStatusCountSerializer(serializers.ModelSerializer):

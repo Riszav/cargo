@@ -4,6 +4,7 @@ from config.base_model import BaseModel
 from django.utils import timezone
 from config.choices import *
 from apps.packages.utils import update_tarif, send_message
+from rest_framework.exceptions import ValidationError
 
 
 class WarehouseData(BaseModel):
@@ -98,8 +99,15 @@ class Package(BaseModel):
         return f'{self.client} - {self.recipient}'
     
     def save(self, *args, **kwargs):
-        if self.tracking_number and self.__class__.objects.filter(tracking_number=self.tracking_number).exclude(pk=self.id).exists():
-            raise ValueError('Трек номер уже существует')
+        if (
+            self.tracking_number and
+            self.__class__.objects
+                .exclude(pk=self.pk)
+                .annotate(last6=models.functions.Right('tracking_number', 6))
+                .filter(last6=self.tracking_number[-6:])
+                .exists()
+        ):
+            raise ValidationError({'tracking_number': 'Трек номер с такой концовкой уже существует'})
         
         old_instance = None
         old_status = None
