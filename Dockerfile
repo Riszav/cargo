@@ -8,9 +8,8 @@ WORKDIR /usr/src/app
 
 COPY req.txt ./
 
-COPY . .
-
 RUN pip install --upgrade pip
 
 RUN pip install --no-cache-dir -r req.txt
 
+COPY . .
