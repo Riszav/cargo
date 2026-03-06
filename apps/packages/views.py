@@ -12,6 +12,7 @@ from apps.users import models as users_models
 from apps.users import serializers as users_serializers
 from config.choices import *
 from .utils import send_package_to_home
+from config.paginations import CustomPageNumberPagination
 
 
 @extend_schema(tags=['Посылки'])
@@ -30,6 +31,7 @@ from .utils import send_package_to_home
 ])
 class PackageListView(ListCreateAPIView):
     permission_classes = [IsAdminOrManager]
+    pagination_class = CustomPageNumberPagination
     
     def get_queryset(self):
         queryset = models.Package.objects.all()
@@ -181,6 +183,7 @@ class PackageDetailView(RetrieveUpdateDestroyAPIView):
 class MyPackageListView(ListCreateAPIView):
     serializer_class = serializers.PackageCreateSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
     
     def get_queryset(self):
         queryset = models.Package.objects.filter(client=self.request.user)
