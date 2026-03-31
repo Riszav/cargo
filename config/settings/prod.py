@@ -16,9 +16,9 @@ DATABASES = {
 
 CSRF_TRUSTED_ORIGINS = [
     "http://"+config('IP_ADDRESS'), 
-    "http://"+config('IP_ADDRESS')+":8088", 
+    "http://"+config('IP_ADDRESS')+":80", 
     "http://"+config('DOMAIN_NAME'), 
     "https://"+config('DOMAIN_NAME'), 
-    "https://"+config('DOMAIN_NAME')+":8088", 
+    "https://"+config('DOMAIN_NAME')+":80", 
     ]
 

@@ -17,9 +17,9 @@
       command: sh -c "python manage.py makemigrations && 
                       python manage.py migrate && 
                       python manage.py collectstatic --noinput &&
-                      gunicorn config.wsgi:application --bind 0.0.0.0:8018"
+                      gunicorn config.wsgi:application --bind 0.0.0.0:8000"
       ports:
-        - "8018:8018"
+        - "8000:8000"
 
     pgdb:
       image: postgres:latest
@@ -32,7 +32,7 @@
         POSTGRES_USER: ${SQL_USER}
         POSTGRES_PASSWORD: ${SQL_PASSWORD}
       ports:
-        - "5448:5432"
+        - "5432:5432"
       volumes:
         - db_data:/var/lib/postgresql/data/
 
@@ -50,13 +50,15 @@
       container_name: cargo_nginx
       restart: always
       ports:
-        - "8088:8088"
+        - "80:80"
+        - "443:443"
       volumes:
-        - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        # - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        - ./nginx_ssl.conf:/etc/nginx/nginx.conf
         - back_static:/usr/src/app/back_static
         - back_media:/usr/src/app/back_media
         - dist_volume:/usr/src/app/dist
-        # - /etc/letsencrypt:/etc/letsencrypt
+        - /etc/letsencrypt:/etc/letsencrypt
       depends_on:
         - web
         - frontend
