@@ -5,7 +5,7 @@
       restart: always
       build:
         context: .
-      env_file: 
+      env_file:
         - .env
       volumes:
         - .:/app
@@ -13,19 +13,41 @@
         - back_media:/usr/src/app/back_media
       depends_on:
         - pgdb
+        - redis
         - frontend
-      command: sh -c "python manage.py makemigrations && 
-                      python manage.py migrate && 
+      command: sh -c "python manage.py makemigrations &&
+                      python manage.py migrate &&
                       python manage.py collectstatic --noinput &&
                       gunicorn config.wsgi:application --bind 0.0.0.0:8000"
       ports:
         - "8000:8000"
 
+    celery:
+      container_name: cargo_celery
+      restart: always
+      build:
+        context: .
+      env_file:
+        - .env
+      volumes:
+        - .:/app
+      depends_on:
+        - pgdb
+        - redis
+      command: celery -A config worker -l info
+
+    redis:
+      image: redis:7-alpine
+      container_name: cargo_redis
+      restart: always
+      ports:
+        - "6379:6379"
+
     pgdb:
       image: postgres:17.5
       container_name: cargo_postgres
       restart: always
-      env_file: 
+      env_file:
         - .env
       environment:
         POSTGRES_DB: ${SQL_DATABASE}
