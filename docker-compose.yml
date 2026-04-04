@@ -22,7 +22,7 @@
         - "8000:8000"
 
     pgdb:
-      image: postgres:latest
+      image: postgres:17.5
       container_name: cargo_postgres
       restart: always
       env_file: 
@@ -39,7 +39,7 @@
     frontend:
       container_name: cargo_front
       build:
-        context: ../cargo_front
+        context: ../front_cargo
       env_file:
         - .env
       volumes:
